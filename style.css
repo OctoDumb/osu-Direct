@@ -1,0 +1,100 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    color: white;
+    border-radius: 5px;
+    height: 100%;
+    z-index: -10;
+    opacity: 1;
+    background: rgba(255,0,132,1);
+    background: -moz-radial-gradient(center, ellipse cover, rgba(255,0,132,1) 0%, rgba(166,0,89,1) 73%, rgba(166,0,89,1) 100%);
+    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(255,0,132,1)), color-stop(73%, rgba(166,0,89,1)), color-stop(100%, rgba(166,0,89,1)));
+    background: -webkit-radial-gradient(center, ellipse cover, rgba(255,0,132,1) 0%, rgba(166,0,89,1) 73%, rgba(166,0,89,1) 100%);
+    background: -o-radial-gradient(center, ellipse cover, rgba(255,0,132,1) 0%, rgba(166,0,89,1) 73%, rgba(166,0,89,1) 100%);
+    background: -ms-radial-gradient(center, ellipse cover, rgba(255,0,132,1) 0%, rgba(166,0,89,1) 73%, rgba(166,0,89,1) 100%);
+    background: radial-gradient(ellipse at center, rgba(255,0,132,1) 0%, rgba(166,0,89,1) 73%, rgba(166,0,89,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff0084', endColorstr='#a60059', GradientType=1 );
+}
+h1 {
+    text-align: center;
+    margin: 5px;
+}
+form {
+    width: 250px;
+    color: white;
+}
+.btn-success {
+    width: 90px;
+    border-radius: 20px;
+    box-shadow: 0px 17px 10px -10px rgba(0, 0, 0, 0.4);
+    transition: 1s;
+    text-align: center;
+    margin: 5px;
+    transition: 1s;
+}
+.btn-success:hover {
+    background: #218A39;
+    box-shadow: 0px 37px 20px -20px rgba(0, 0, 0, 0.2);
+    -webkit-transform: translate(0px, -3px) scale(1.05);
+    transform: translate(0px, -3px) scale(1.05);
+    transition: 1s;
+}
+#back {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;  
+    z-index: -1;
+    opacity: 0.1;
+    background: url("background.png");
+}
+#titlebar {
+    height: 7vh;
+    display: flex;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+    border-bottom-right-radius: 10px;
+    -webkit-app-region: drag;
+}
+#titlebar h2 {
+    font-size: 15px;
+    margin-top: 2px;
+    padding: 1px 10px;
+}
+label {
+    width: 100%;
+    text-align: center;
+    margin-bottom: -2px;
+}
+
+.exit {
+    cursor: pointer;
+    color: white;
+    position: fixed;
+    top: 1vh;
+    z-index: 100 !important;
+    right: 5px;
+}
+
+.tray {
+    cursor: pointer;
+    color: white;
+    position: fixed;
+    top: 0.5vh;
+    z-index: 100 !important;
+    right: 25px;
+}

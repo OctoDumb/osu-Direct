@@ -1,0 +1,30 @@
+{
+  "name": "osu!Direct",
+  "version": "1.0.0",
+  "description": "Super modern replacement for in-game osu!direct",
+  "main": "index.js",
+  "build": {
+    "appId": "com.octodumb.osudirect",
+    "win": {
+      "target": [
+        "NSIS"
+      ],
+      "icon": "icon.ico"
+    }
+  },
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "OctopuSS & 4FuN",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^3.0.7",
+    "electron-builder": "^20.31.2"
+  },
+  "dependencies": {
+    "electron-drag": "^1.2.2",
+    "querystring": "^0.2.0",
+    "request": "^2.88.0",
+    "request-progress": "^3.0.0"
+  }
+}

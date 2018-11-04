@@ -1,0 +1,292 @@
+<html>
+	<head>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			body {
+				font-family: sans-serif;
+				font-size: 40px;
+				font-size: 2.5rem;
+				color: #fff;
+				text-align: center;
+				overflow: hidden;
+				background: rgba(255,0,132,1);
+				background: -moz-radial-gradient(center, ellipse cover, rgba(255,0,132,1) 0%, rgba(166,0,89,1) 73%, rgba(166,0,89,1) 100%);
+				background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(255,0,132,1)), color-stop(73%, rgba(166,0,89,1)), color-stop(100%, rgba(166,0,89,1)));
+				background: -webkit-radial-gradient(center, ellipse cover, rgba(255,0,132,1) 0%, rgba(166,0,89,1) 73%, rgba(166,0,89,1) 100%);
+				background: -o-radial-gradient(center, ellipse cover, rgba(255,0,132,1) 0%, rgba(166,0,89,1) 73%, rgba(166,0,89,1) 100%);
+				background: -ms-radial-gradient(center, ellipse cover, rgba(255,0,132,1) 0%, rgba(166,0,89,1) 73%, rgba(166,0,89,1) 100%);
+				background: radial-gradient(ellipse at center, rgba(255,0,132,1) 0%, rgba(166,0,89,1) 73%, rgba(166,0,89,1) 100%);
+				filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff0084', endColorstr='#a60059', GradientType=1 );
+			}
+			.back {
+				position: absolute;
+				top: 0;
+				height: 100vh;
+				width: 100vw;
+				opacity: 0.1;
+   				background: url("https://osu.ppy.sh/images/layout/nav-backgrounds/triangles-combined.png");
+			}
+
+				.loaders {
+				height: 300px;
+				line-height: 300px;
+				}
+
+				.loader {
+					display: inline-block;
+					position: relative;
+					z-index: 10;
+					margin-top: 19px;
+					width: 50px;
+					height: 50px;
+					vertical-align: middle;
+				}
+
+				/*	$Loader Quadrant
+					========================================================================== */
+				.loader-quart {
+				border-radius: 50px;
+				border: 6px solid rgba(0, 0, 0, 0.4);
+				z-index: 10;
+				}
+				.loader-quart:after {
+				content: "";
+				position: absolute;
+				top: -6px;
+				right: -6px;
+				bottom: -6px;
+				left: -6px;
+				border-radius: 50px;
+				border: 6px solid transparent;
+				border-top-color: white;
+				-webkit-animation: spin 1s linear infinite;
+				animation: spin 1s linear infinite;
+				}
+
+				/*	$Loader Double circle
+					========================================================================== */
+				.loader-double {
+				border-radius: 50px;
+				border: 6px solid transparent;
+				border-top-color: red;
+				border-bottom-color: red;
+				-webkit-animation: spin 1.5s linear infinite;
+				animation: spin 1.5s linear infinite;
+				}
+				.loader-double:before, .loader-double:after {
+				content: "";
+				position: absolute;
+				top: 5px;
+				right: 5px;
+				bottom: 5px;
+				left: 5px;
+				border-radius: 50px;
+				border: 6px solid transparent;
+				border-top-color: red;
+				border-bottom-color: red;
+				opacity: 1;
+				filter: alpha(opacity=100);
+				-webkit-animation: spinreverse 2s linear infinite;
+				animation: spinreverse 2s linear infinite;
+				}
+				.loader-double:before {
+				top: 13px;
+				left: 13px;
+				bottom: 13px;
+				right: 13px;
+				-webkit-animation: spinreverse 3s linear infinite;
+				animation: spinreverse 3s linear infinite;
+				}
+
+				/*	$Loader Multiple circle
+					========================================================================== */
+				.loader-circles {
+				border-radius: 50px;
+				border: 3px solid transparent;
+				border-top-color: red;
+				-webkit-animation: spin 1s linear infinite;
+				animation: spin 1s linear infinite;
+				}
+				.loader-circles:before, .loader-circles:after {
+				content: "";
+				position: absolute;
+				top: 5px;
+				right: 5px;
+				bottom: 5px;
+				left: 5px;
+				border-radius: 50px;
+				border: 3px solid transparent;
+				border-top-color: red;
+				opacity: 1;
+				filter: alpha(opacity=100);
+				-webkit-animation: spinreverse 5s linear infinite;
+				animation: spinreverse 5s linear infinite;
+				}
+				.loader-circles:before {
+				top: 12px;
+				left: 12px;
+				bottom: 12px;
+				right: 12px;
+				-webkit-animation: spinreverse 10s linear infinite;
+				animation: spinreverse 10s linear infinite;
+				}
+
+				/*	$Loader Bars
+					========================================================================== */
+				.loader-bars:before,
+				.loader-bars:after,
+				.loader-bars span {
+				content: "";
+				display: block;
+				position: absolute;
+				left: 0;
+				top: 0;
+				width: 10px;
+				height: 30px;
+				background-color: #fff;
+				-webkit-animation: grow 1.5s linear infinite;
+				animation: grow 1.5s linear infinite;
+				}
+
+				.loader-bars:after {
+				left: 15px;
+				-webkit-animation: grow 1.5s linear -0.5s infinite;
+				animation: grow 1.5s linear -0.5s infinite;
+				}
+
+				.loader-bars span {
+				left: 30px;
+				-webkit-animation: grow 1.5s linear -1s infinite;
+				animation: grow 1.5s linear -1s infinite;
+				}
+
+				@-webkit-keyframes grow {
+				0% {
+					-webkit-transform: scaleY(0);
+					transform: scaleY(0);
+					opacity: 0;
+				}
+				50% {
+					-webkit-transform: scaleY(1);
+					transform: scaleY(1);
+					opacity: 1;
+				}
+				100% {
+					-webkit-transform: scaleY(0);
+					transform: scaleY(0);
+					opacity: 0;
+				}
+				}
+				@keyframes grow {
+				0% {
+					-webkit-transform: scaleY(0);
+					transform: scaleY(0);
+					opacity: 0;
+				}
+				50% {
+					-webkit-transform: scaleY(1);
+					transform: scaleY(1);
+					opacity: 1;
+				}
+				100% {
+					-webkit-transform: scaleY(0);
+					transform: scaleY(0);
+					opacity: 0;
+				}
+				}
+				@-webkit-keyframes spin {
+				0% {
+					-webkit-transform: rotate(0deg);
+					tranform: rotate(0deg);
+				}
+				100% {
+					-webkit-transform: rotate(360deg);
+					tranform: rotate(360deg);
+				}
+				}
+				@keyframes spin {
+				0% {
+					-webkit-transform: rotate(0deg);
+					tranform: rotate(0deg);
+				}
+				100% {
+					-webkit-transform: rotate(360deg);
+					tranform: rotate(360deg);
+				}
+				}
+				@-webkit-keyframes spinreverse {
+				0% {
+					-webkit-transform: rotate(0deg);
+					tranform: rotate(0deg);
+				}
+				100% {
+					-webkit-transform: rotate(-360deg);
+					tranform: rotate(-360deg);
+				}
+				}
+				@keyframes spinreverse {
+				0% {
+					-webkit-transform: rotate(0deg);
+					tranform: rotate(0deg);
+				}
+				100% {
+					-webkit-transform: rotate(-360deg);
+					tranform: rotate(-360deg);
+				}
+				}
+
+		</style>
+		<title>Authenticating...</title>
+	</head>
+	<body>
+		<div class="back"></div>
+		<section class="loaders"><span class="loader loader-quart"> </span> Loading...</section>
+	</body>
+	<script>
+		var request = require('request').defaults({
+			jar: true,
+			headers: {'User-Agent': 'osu!Beatmaps'}
+		});
+
+		var incorrect = /You have specified an incorrect password/i;
+
+		var fs = require('fs');
+		var user = JSON.parse(fs.readFileSync("./loginData.json"))
+
+		const { BrowserWindow, dialog } = require('electron').remote;
+		
+		if(!fs.existsSync("./downloadDirectory.txt")) {
+			var path = dialog.showOpenDialog({title: 'Choose osu!/Songs directory', properties: ['openDirectory']});
+			fs.writeFileSync("./downloadDirectory.txt", path);
+		}
+
+		request.post({
+			url: 'https://osu.ppy.sh/forum/ucp.php?mode=login',
+			formData: {
+				login: 'Login',
+				username: user.username,
+				password: user.password
+			}
+		}, function(err, res, body) {
+			if(incorrect.test(body)) {
+				fs.unlinkSync("./loginData.json");
+				document.write("Incorrect log in data");
+				let mainWindow = new BrowserWindow({width: 400, height: 300, frame: false, icon: __dirname + '/icon.ico'});
+				mainWindow.setResizable(false);
+				mainWindow.setFullScreenable(false);
+				mainWindow.loadFile('login.html');
+				window.close();
+			} else {
+				document.write("Loading...");
+				let mainWindow = new BrowserWindow({width: 1000, height: 700, frame: false, icon: __dirname + '/icon.ico'});
+				mainWindow.setResizable(false);
+				mainWindow.setFullScreenable(false);
+				mainWindow.loadFile('search.html');
+				window.close();
+			}
+		})
+	</script>
+</html>
