@@ -9,16 +9,7 @@ body {
     color: white;
     height: 100vh;
     opacity: 1;
-    background: rgba(255,0,132,1);
-    background: -moz-radial-gradient(center, ellipse cover, rgba(255,0,132,1) 0%, rgba(166,0,89,1) 73%, rgba(166,0,89,1) 100%);
-    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(255,0,132,1)), color-stop(73%, rgba(166,0,89,1)), color-stop(100%, rgba(166,0,89,1)));
-    background: -webkit-radial-gradient(center, ellipse cover, rgba(255,0,132,1) 0%, rgba(166,0,89,1) 73%, rgba(166,0,89,1) 100%);
-    background: -o-radial-gradient(center, ellipse cover, rgba(255,0,132,1) 0%, rgba(166,0,89,1) 73%, rgba(166,0,89,1) 100%);
-    background: -ms-radial-gradient(center, ellipse cover, rgba(255,0,132,1) 0%, rgba(166,0,89,1) 73%, rgba(166,0,89,1) 100%);
-    background: radial-gradient(ellipse at center, rgba(255,0,132,1) 0%, rgba(166,0,89,1) 73%, rgba(166,0,89,1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff0084', endColorstr='#a60059', GradientType=1 );
 }
-
 
 h1 {
     text-align: center;
@@ -53,7 +44,7 @@ form {
     justify-content: center;
     align-items: center;  
     z-index: -1;
-    opacity: 0.1;
+    opacity: 0.07;
     background: url("background.png");
 }
 #dback {
@@ -111,9 +102,15 @@ label {
 form {
     display: flex;
     align-items: center;
-    margin-left: 160px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.category {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    color: white;
 }
 
 form input {
@@ -136,7 +133,7 @@ form input:focus {
     margin-bottom: 10px;
     margin-top: 10px;
     height: 40px !important;
-    width: 100px !important;
+    width: 80px !important;
 }
 
 .search {
@@ -145,7 +142,7 @@ form input:focus {
     margin-top: 10px;
     margin-right: 10px;
     height: 40px !important;
-    width: 200px !important;
+    width: 300px !important;
 }
 
 .form-control:focus {
@@ -521,4 +518,26 @@ h2 {
 
 a {
     cursor: pointer;
+}
+
+#more-op {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    flex-direction: column;
+    font-size: 6px !important;
+    cursor: pointer;
+}
+
+h4 {
+    font-size: 9px !important;
+}
+
+.more-options {
+    transform: translateY(-7px);
+}
+
+.form-check {
+    margin-left: 20px;
 }

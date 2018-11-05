@@ -133,10 +133,18 @@
                     createNotification('error', 'Wait until you are logged in!');
                     return;
                 }
-                let params = {};    
+                document.getElementById('more-op').style.display = "flex";
+                document.getElementById('category').style.display = "none";
+                document.getElementById('category-2').style.display = "none";
+                let params = {};
                 if(document.getElementById("search-query").value != "") params.q = document.getElementById("search-query").value;
-                if(document.getElementById("search-category").value != "7") params.s = document.getElementById("search-category").value;
+                if(document.getElementById('search-genre').value != "") params.g = document.getElementById("search-genre").value;
+                if(document.getElementById('search-language').value != "") params.l = document.getElementById('search-language').value;
+                if(document.getElementById("search-category").value != "0") params.s = document.getElementById("search-category").value;
                 if(document.getElementById("search-mode").value != "-1") params.m = document.getElementById("search-mode").value;
+                if(document.getElementById("search-recommended").checked) params.c = "recommended";
+                if(document.getElementById("search-include").checked) params.c = "converts";
+                if(document.getElementById("search-include").checked && document.getElementById("search-recommended").checked) params.c = "converts.recommended";
                 lastparams = params;
                 document.getElementById("maplist").innerHTML = "<h2>Loading...</h2>"
                 var url = `https://osu.ppy.sh/beatmapsets/search?${querystring.stringify(params)}`;
@@ -495,9 +503,15 @@
                     event.preventDefault()
                 } else return true;
             }
+            
+            function openOptions() {
+                document.getElementById('more-op').style.display = "none";
+                document.getElementById('category').style.display = "flex";
+                document.getElementById('category-2').style.display = "flex";
+            }
         </script>        
     </head>
-    <body>
+    <body style="background: rgb(209, 0, 108);">
         <div id="back"></div>
         <div id="titlebar"><h2>osu!Direct</h2></div>
         <audio id="preview">
@@ -517,7 +531,7 @@
                 <input class="form-control search" id="search-query" type="text" placeholder="Enter keywords...">
                 Category:
                 <select class="form-control" id="search-category">
-                    <option value="7" selected>Any</option>
+                    <option value="-1" selected>Any</option>
                     <option value="0">Ranked & Approved</option>
                     <option value="1">Approved</option>
                     <option value="8">Loved</option>
@@ -537,6 +551,46 @@
                 </select>
                 <i onclick="searchBeatmapsets()" class="fas fa-search"></i>
             </form>
+            <div onclick="openOptions()" id="more-op"><h4>More Search Options</h4><i class="fas fa-angle-down fa-2x more-options"></i></div>
+            <div id="category" class="category">
+                Language: 
+                <select class="form-control" id="search-language">
+                    <option value="" selected>Any</option>
+                    <option value="2">English</option>
+                    <option value="4">Chinese</option>
+                    <option value="7">French</option>
+                    <option value="8">German</option>
+                    <option value="11">Italian</option>
+                    <option value="3">Japanese</option>
+                    <option value="6">Korean</option>
+                    <option value="10">Spanish</option>
+                    <option value="9">Swedish</option>
+                    <option value="5">Instrumental</option>
+                    <option value="1">Other</option>
+                </select>
+                Genre:
+                <select class="form-control" id="search-genre">
+                    <option value="" selected>Any</option>
+                    <option value="2">Video Game</option>
+                    <option value="3">Anime</option>
+                    <option value="4">Rock</option>
+                    <option value="5">Pop</option>
+                    <option value="6">Other</option>
+                    <option value="7">Novelty</option>
+                    <option value="8">Hip Hop</option>
+                    <option value="9">Electronic</option>
+                </select>
+            </div>
+            <div id="category-2" class="category">
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="search-recommended">
+                    <label class="form-check-label" for="search-recommended">Recommended difficulty</label>
+                </div>
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="search-include">
+                    <label class="form-check-label" for="search-include">Include converted beatmaps</label>
+                </div>
+            </div>
             <div id="maplist">
                 <h2>Authorizing...</h2>
             </div>

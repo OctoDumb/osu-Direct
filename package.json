@@ -1,6 +1,6 @@
 {
   "name": "osu!Direct",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Super modern replacement for in-game osu!direct",
   "main": "index.js",
   "build": {
@@ -19,7 +19,8 @@
   "license": "ISC",
   "devDependencies": {
     "electron": "^3.0.7",
-    "electron-builder": "^20.31.2"
+    "electron-builder": "^20.31.2",
+    "electron-packager": "^12.2.0"
   },
   "dependencies": {
     "electron-drag": "^1.2.2",
