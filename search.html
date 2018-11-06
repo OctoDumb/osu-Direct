@@ -51,6 +51,8 @@
 
             let rawDirs = fs.readdirSync(dlPath);
 
+            let start = 0;
+
             var arrayOfDownloaded = [];
             rawDirs.forEach(dirr => {
                 if(dirr.indexOf(".osz") == -1) arrayOfDownloaded.push(Number(dirr.split(" ")[0]))
@@ -133,6 +135,7 @@
                     createNotification('error', 'Wait until you are logged in!');
                     return;
                 }
+                if(start > 0) return createNotification('started', `Wait until the search is complete.`);
                 document.getElementById('more-op').style.display = "flex";
                 document.getElementById('category').style.display = "none";
                 document.getElementById('category-2').style.display = "none";
@@ -258,7 +261,6 @@
                 });
             }
             
-            let start = 0;
             function loadMore() {
                 lastpage++;
                 if(start == 0) {
