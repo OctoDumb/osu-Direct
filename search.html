@@ -136,12 +136,14 @@
                 document.getElementById('more-op').style.display = "flex";
                 document.getElementById('category').style.display = "none";
                 document.getElementById('category-2').style.display = "none";
+                document.getElementById('category-3').style.display = "none";
                 let params = {};
                 if(document.getElementById("search-query").value != "") params.q = document.getElementById("search-query").value;
                 if(document.getElementById('search-genre').value != "") params.g = document.getElementById("search-genre").value;
                 if(document.getElementById('search-language').value != "") params.l = document.getElementById('search-language').value;
                 if(document.getElementById("search-category").value != "0") params.s = document.getElementById("search-category").value;
                 if(document.getElementById("search-mode").value != "-1") params.m = document.getElementById("search-mode").value;
+                if(document.getElementById("search-sort").value != "") params.sort = document.getElementById("search-sort").value;
                 if(document.getElementById("search-recommended").checked) params.c = "recommended";
                 if(document.getElementById("search-include").checked) params.c = "converts";
                 if(document.getElementById("search-include").checked && document.getElementById("search-recommended").checked) params.c = "converts.recommended";
@@ -159,8 +161,14 @@
                         return;
                     }
                     var maplist = "";
+                    let ind = 0;
                     beatmapsets.forEach(beatmapset => {
-                        if(arrayOfDownloaded.indexOf(beatmapset.id) == -1 && ignored.indexOf(beatmapset.id) == -1) {
+                        let star = beatmapsets[ind].beatmaps[beatmapsets[ind].beatmaps.length-1].difficulty_rating;
+                        let ar = beatmapsets[ind].beatmaps[beatmapsets[ind].beatmaps.length-1].ar;
+                        let cs = beatmapsets[ind].beatmaps[beatmapsets[ind].beatmaps.length-1].cs;
+                        let od = beatmapsets[ind].beatmaps[beatmapsets[ind].beatmaps.length-1].accuracy;
+                        let hp = beatmapsets[ind].beatmaps[beatmapsets[ind].beatmaps.length-1].drain;
+                        if(arrayOfDownloaded.indexOf(beatmapset.id) == -1 && ignored.indexOf(beatmapset.id) == -1 && star >= document.querySelector('#search-star').value && ar >= document.querySelector('#search-ar').value && od >= document.querySelector('#search-od').value && cs >= document.querySelector('#search-cs').value && hp >= document.querySelector('#search-hp').value) {
                             let difficulties = "";
                             let diffs = sortDiffs(beatmapset.beatmaps);
                             if(diffs.length > 12) {
@@ -173,19 +181,19 @@
                                         if(count != 0) {
                                             switch(nowmode) {
                                                 case 0: {
-                                                    difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-osu"></i> ${count}</div>`;
+                                                    difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-osu"></i> ${count}</div>`;
                                                     break;
                                                 }
                                                 case 1: {
-                                                    difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-taiko"></i> ${count}</div>`;
+                                                    difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-taiko"></i> ${count}</div>`;
                                                     break;
                                                 }
                                                 case 2: {
-                                                    difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-fruits"></i> ${count}</div>`;
+                                                    difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-fruits"></i> ${count}</div>`;
                                                     break;
                                                 }
                                                 case 3: {
-                                                    difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-mania"></i> ${count}</div>`;
+                                                    difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-mania"></i> ${count}</div>`;
                                                     break;
                                                 }
                                             }
@@ -196,25 +204,25 @@
                                 })
                                 switch(nowmode) {
                                     case 0: {
-                                        difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-osu"></i> ${count}</div>`;
+                                        difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-osu"></i> ${count}</div>`;
                                         break;
                                     }
                                     case 1: {
-                                        difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-taiko"></i> ${count}</div>`;
+                                        difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-taiko"></i> ${count}</div>`;
                                         break;
                                     }
                                     case 2: {
-                                        difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-fruits"></i> ${count}</div>`;
+                                        difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-fruits"></i> ${count}</div>`;
                                         break;
                                     }
                                     case 3: {
-                                        difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-mania"></i> ${count}</div>`;
+                                        difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-mania"></i> ${count}</div>`;
                                         break;
                                     }
                                 }
                             } else {
                                 diffs.forEach(diff => {
-                                    difficulties+=`<i title="${diff.version} ${diff.difficulty_rating.toPrecision(3)}★" style="color: ${getDiffColor(diff.difficulty_rating)}" class="fal diff fa-extra-mode-${diff.mode}"></i>`;
+                                    difficulties+=`<i title="${diff.version} ${diff.difficulty_rating.toPrecision(3)}★ \nAR:${diff.ar} OD:${diff.accuracy} CS:${diff.cs} HP:${diff.cs} ${diff.drain}" style="color: ${getDiffColor(diff.difficulty_rating)}" class="fal diff fa-extra-mode-${diff.mode}"></i>`;
                                 })
                             }
                             maplist+=`<div class="map" id="mapset-${beatmapset.id}">
@@ -233,9 +241,11 @@
                                 <div id="alldiff">${difficulties}</div>
                             </div>`;
                         }
+                        ind++;
                     })
                     lastpage = 1;
-                    if(maplist != "") {
+                    let = numberDiv = document.getElementsByClassName('map');
+                    if(maplist != "" && numberDiv.length >= 20) {
                         maplist+=`<div id="nextPageButton"><i onclick="loadMore()" class="fas fa-angle-down fa-3x loadNext"></i></div>`
                         document.getElementById("maplist").innerHTML = maplist;
                         document.getElementById('footer').style.opacity = "1";
@@ -247,12 +257,18 @@
                     }
                 });
             }
-
+            
+            let start = 0;
             function loadMore() {
                 lastpage++;
-                document.getElementById("nextPageButton").parentNode.removeChild(document.getElementById("nextPageButton"));
+                if(start == 0) {
+                    document.getElementById("nextPageButton").parentNode.removeChild(document.getElementById("nextPageButton"));
+                }
                 var url = `https://osu.ppy.sh/beatmapsets/search?${querystring.stringify(Object.assign(lastparams, {page: lastpage}))}`;
-                document.getElementById("maplist").innerHTML += `<div id="loadingNextPage"><i class="fas fa-spinner fa-2x fa-spin loadingNext"></i></div>`;
+                if(start == 0) {
+                    document.getElementById("maplist").innerHTML += `<div id="loadingNextPage"><i class="fas fa-spinner fa-2x fa-spin loadingNext"></i></div>`;
+                    start++;
+                }
                 request.get(url, function(err, res, body) {
                     if(err) {
                         console.log(err);
@@ -270,8 +286,14 @@
                         return;
                     }
                     var maplist = "";
+                    let ind = 0;
                     beatmapsets.forEach(beatmapset => {
-                        if(arrayOfDownloaded.indexOf(beatmapset.id) == -1 && ignored.indexOf(beatmapset.id) == -1) {
+                        let star = beatmapsets[ind].beatmaps[beatmapsets[ind].beatmaps.length-1].difficulty_rating;
+                        let ar = beatmapsets[ind].beatmaps[beatmapsets[ind].beatmaps.length-1].ar;
+                        let cs = beatmapsets[ind].beatmaps[beatmapsets[ind].beatmaps.length-1].cs;
+                        let od = beatmapsets[ind].beatmaps[beatmapsets[ind].beatmaps.length-1].accuracy;
+                        let hp = beatmapsets[ind].beatmaps[beatmapsets[ind].beatmaps.length-1].drain;
+                        if(arrayOfDownloaded.indexOf(beatmapset.id) == -1 && ignored.indexOf(beatmapset.id) == -1 && star >= document.querySelector('#search-star').value && ar >= document.querySelector('#search-ar').value && od >= document.querySelector('#search-od').value && cs >= document.querySelector('#search-cs').value && hp >= document.querySelector('#search-hp').value) {
                             let difficulties = "";
                             let diffs = sortDiffs(beatmapset.beatmaps);
                             if(diffs.length > 12) {
@@ -284,19 +306,19 @@
                                         if(count != 0) {
                                             switch(nowmode) {
                                                 case 0: {
-                                                    difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-osu"></i> ${count}</div>`;
+                                                    difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-osu"></i> ${count}</div>`;
                                                     break;
                                                 }
                                                 case 1: {
-                                                    difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-taiko"></i> ${count}</div>`;
+                                                    difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-taiko"></i> ${count}</div>`;
                                                     break;
                                                 }
                                                 case 2: {
-                                                    difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-fruits"></i> ${count}</div>`;
+                                                    difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-fruits"></i> ${count}</div>`;
                                                     break;
                                                 }
                                                 case 3: {
-                                                    difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-mania"></i> ${count}</div>`;
+                                                    difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-mania"></i> ${count}</div>`;
                                                     break;
                                                 }
                                             }
@@ -307,25 +329,25 @@
                                 })
                                 switch(nowmode) {
                                     case 0: {
-                                        difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-osu"></i> ${count}</div>`;
+                                        difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-osu"></i> ${count}</div>`;
                                         break;
                                     }
                                     case 1: {
-                                        difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-taiko"></i> ${count}</div>`;
+                                        difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-taiko"></i> ${count}</div>`;
                                         break;
                                     }
                                     case 2: {
-                                        difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-fruits"></i> ${count}</div>`;
+                                        difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-fruits"></i> ${count}</div>`;
                                         break;
                                     }
                                     case 3: {
-                                        difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-mania"></i> ${count}</div>`;
+                                        difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-mania"></i> ${count}</div>`;
                                         break;
                                     }
                                 }
                             } else {
                                 diffs.forEach(diff => {
-                                    difficulties+=`<i title="${diff.version} ${diff.difficulty_rating.toPrecision(3)}★" style="color: ${getDiffColor(diff.difficulty_rating)}" class="fal diff fa-extra-mode-${diff.mode}"></i>`;
+                                    difficulties+=`<i title="${diff.version} ${diff.difficulty_rating.toPrecision(3)}★ \nAR:${diff.ar} OD:${diff.accuracy} CS:${diff.cs} HP:${diff.cs} ${diff.drain}" style="color: ${getDiffColor(diff.difficulty_rating)}" class="fal diff fa-extra-mode-${diff.mode}"></i>`;
                                 })
                             }
                             maplist+=`<div class="map" id="mapset-${beatmapset.id}">
@@ -344,8 +366,11 @@
                                 <div id="alldiff">${difficulties}</div>
                             </div>`;
                         }
+                        ind++;
                     })
-                    if(maplist != "") {
+                    let = numberDiv = document.getElementsByClassName('map');
+                    console.log(numberDiv.length)
+                    if(maplist != "" && numberDiv.length >= 20) {
                         if(!loaded) {
                             loaded = true;
                             document.getElementById('footer').style.opacity = "1";
@@ -353,8 +378,11 @@
                         document.getElementById("loadingNextPage").parentNode.removeChild(document.getElementById("loadingNextPage"));
                         maplist+=`<div id="nextPageButton"><i onclick="loadMore()" class="fas fa-angle-down fa-3x loadNext"></i></div>`
                         document.getElementById("maplist").innerHTML += maplist;
+                        start = 0;
                     } else {
-                        maplist+=`<div id="nextPageButton"><i onclick="loadMore()" class="fas fa-angle-down fa-3x loadNext"></i></div>`
+                        if(start == 0) {
+                            maplist+=`<div id="nextPageButton"><i onclick="loadMore()" class="fas fa-angle-down fa-3x loadNext"></i></div>`
+                        }
                         document.getElementById("maplist").innerHTML += maplist;
                         loadMore();
                     }
@@ -434,6 +462,7 @@
             }
 
             function donwloadBeatmapset(id, title, artist) {
+                if(document.getElementById('search-novideo').checked) id = id + "n";
                 var alreadyDownloading = false;
                 downloads.forEach(dl => {
                     if(dl == id) {
@@ -508,6 +537,27 @@
                 document.getElementById('more-op').style.display = "none";
                 document.getElementById('category').style.display = "flex";
                 document.getElementById('category-2').style.display = "flex";
+                document.getElementById('category-3').style.display = "flex";
+            }
+
+            function outputStarUpdate(vol) {
+                document.querySelector('#output-star').innerHTML = "Star >= " + document.querySelector('#search-star').value + "*";
+            }
+
+            function outputArUpdate(vol) {
+                document.querySelector('#output-ar').innerHTML = "AR >= " + document.querySelector('#search-ar').value ;
+            }
+
+            function outputOdUpdate(vol) {
+                document.querySelector('#output-od').innerHTML = "OD >= " + document.querySelector('#search-od').value ;
+            }
+
+            function outputCsUpdate(vol) {
+                document.querySelector('#output-cs').innerHTML = "CS >= " + document.querySelector('#search-cs').value ;
+            }
+
+            function outputHpUpdate(vol) {
+                document.querySelector('#output-hp').innerHTML = "HP >= " + document.querySelector('#search-hp').value ;
             }
         </script>        
     </head>
@@ -533,7 +583,6 @@
                 <select class="form-control" id="search-category">
                     <option value="-1" selected>Any</option>
                     <option value="0">Ranked & Approved</option>
-                    <option value="1">Approved</option>
                     <option value="8">Loved</option>
                     <option value="2">Favourites</option>
                     <option value="3">Qualified</option>
@@ -580,6 +629,37 @@
                     <option value="8">Hip Hop</option>
                     <option value="9">Electronic</option>
                 </select>
+                Sort:
+                <select class="form-control" id="search-sort">
+                    <option value="" selected>Any</option>
+                    <option value="title_desc">Title</option>
+                    <option value="artist_desc">Artist</option>
+                    <option value="difficulty_desc">Difficulty</option>
+                    <option value="rating_desc">Rating</option>
+                    <option value="plays_desc">Plays</option>
+                </select>
+            </div>
+            <div id="category-3" class="category">
+                <div class="form-group form-range">
+                    <label for="search-star" id="output-star">Star </label>
+                    <input type="range" min="0" max="15" value="0" oninput="outputStarUpdate(value)" step="0.2" class="form-control-range input-range" id="search-star">
+                </div>
+                <div class="form-group form-range">
+                        <label for="search-ar" id="output-ar">AR </label>
+                        <input type="range" min="0" max="10" value="0" oninput="outputArUpdate(value)" step="0.2" class="form-control-range input-range" id="search-ar">
+                </div>
+                <div class="form-group form-range">
+                        <label for="search-od" id="output-od">OD </label>
+                        <input type="range" min="0" max="10" value="0" oninput="outputOdUpdate(value)" step="0.2" class="form-control-range input-range" id="search-od">
+                </div>
+                <div class="form-group form-range">
+                    <label for="search-cs" id="output-cs">CS/Mania keys </label>
+                    <input type="range" min="0" max="10" value="0" oninput="outputCsUpdate(value)" step="0.2" class="form-control-range input-range" id="search-cs">
+                </div>
+                <div class="form-group form-range">
+                    <label for="search-hp" id="output-hp">HP </label>
+                    <input type="range" min="0" max="10" value="0" oninput="outputHpUpdate(value)" step="0.2" class="form-control-range input-range" id="search-hp">
+                </div>
             </div>
             <div id="category-2" class="category">
                 <div class="form-group form-check">
@@ -589,6 +669,10 @@
                 <div class="form-group form-check">
                     <input type="checkbox" class="form-check-input" id="search-include">
                     <label class="form-check-label" for="search-include">Include converted beatmaps</label>
+                </div>
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="search-novideo">
+                    <label class="form-check-label" for="search-novideo">No video</label>
                 </div>
             </div>
             <div id="maplist">

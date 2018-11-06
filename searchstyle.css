@@ -113,6 +113,7 @@ form {
     color: white;
 }
 
+
 form input {
     border-radius: 3px;
     margin-top: 10px;
@@ -541,3 +542,82 @@ h4 {
 .form-check {
     margin-left: 20px;
 }
+
+.form-range {
+    margin-left: 20px;
+}
+
+.input-range {
+    -webkit-appearance: none;
+    width: 90%;
+    border-radius: 20px;
+  }
+  .input-range:focus {
+    outline: none;
+    border: none;
+  }
+  .input-range:focus .input-range::-webkit-slider-thumb  {
+    outline: none;
+    border: none;
+  }
+  .input-range::-webkit-slider-runnable-track {
+    width: 50px;
+    height: 12px;
+    cursor: pointer;
+    background-color: #d8dfe6;
+    border-radius: 6px;
+  }
+  .input-range::-webkit-slider-thumb {
+    border: 2px solid #7d9aa7;
+    background-color: #fff;
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -6px;
+  }
+  .input-range::-moz-range-track {
+    width: 100%;
+    height: 12px;
+    cursor: pointer;
+    background-color: #d8dfe6;
+    border-radius: 6px;
+  }
+  .input-range::-moz-range-thumb {
+    border: 2px solid #7d9aa7;
+    background-color: #fff;
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -6px;
+  }
+  .input-range::-ms-track {
+    width: 100%;
+    height: 12px;
+    cursor: pointer;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+    border-width: 12px 0;
+  }
+  .input-range::-ms-fill-lower {
+    background: #d8dfe6;
+    border: none;
+    border-radius: 6px;
+  }
+  .input-range::-ms-fill-upper {
+    background: #d8dfe6;
+    border: none;
+    border-radius: 6px;
+  }
+  .input-range::-ms-thumb {
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #7d9aa7;
+    cursor: pointer;
+  }
