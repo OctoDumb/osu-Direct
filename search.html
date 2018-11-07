@@ -53,6 +53,10 @@
 
             let start = 0;
 
+            let volume = 0.2;
+
+            let cancel = 0;
+
             var arrayOfDownloaded = [];
             rawDirs.forEach(dirr => {
                 if(dirr.indexOf(".osz") == -1) arrayOfDownloaded.push(Number(dirr.split(" ")[0]))
@@ -131,11 +135,18 @@
             var lastpage;
 
             function searchBeatmapsets() {
+                cancel = 0;
                 if(!authed) {
                     createNotification('error', 'Wait until you are logged in!');
                     return;
                 }
-                if(start > 0) return createNotification('started', `Wait until the search is complete.`);
+                if(document.getElementById("maplist").innerHTML.indexOf("<h2>Nothing found</h2>") == -1) {
+                    start = 0;
+                }
+                if(start > 0 && document.getElementById("maplist").innerHTML.indexOf("<h2>Nothing found</h2>") == -1) {
+                    createNotification('started', `Wait until the search is complete.`);
+                    return
+                }
                 document.getElementById('more-op').style.display = "flex";
                 document.getElementById('category').style.display = "none";
                 document.getElementById('category-2').style.display = "none";
@@ -151,7 +162,8 @@
                 if(document.getElementById("search-include").checked) params.c = "converts";
                 if(document.getElementById("search-include").checked && document.getElementById("search-recommended").checked) params.c = "converts.recommended";
                 lastparams = params;
-                document.getElementById("maplist").innerHTML = "<h2>Loading...</h2>"
+                document.getElementById("loader-proc").style.display = "flex";
+                //document.getElementById("maplist").innerHTML = "<h2>Loading...</h2>"
                 var url = `https://osu.ppy.sh/beatmapsets/search?${querystring.stringify(params)}`;
                 request.get(url, function(err, res, body) {
                     if(body.startsWith("<")) {
@@ -225,7 +237,7 @@
                                 }
                             } else {
                                 diffs.forEach(diff => {
-                                    difficulties+=`<i title="${diff.version} ${diff.difficulty_rating.toPrecision(3)}★ \nAR:${diff.ar} OD:${diff.accuracy} CS:${diff.cs} HP:${diff.cs} ${diff.drain}" style="color: ${getDiffColor(diff.difficulty_rating)}" class="fal diff fa-extra-mode-${diff.mode}"></i>`;
+                                    difficulties+=`<i title="${diff.version} ${diff.difficulty_rating.toPrecision(3)}★ \nAR:${diff.ar} OD:${diff.accuracy} CS:${diff.cs} HP:${diff.drain}" style="color: ${getDiffColor(diff.difficulty_rating)}" class="fal diff fa-extra-mode-${diff.mode}"></i>`;
                                 })
                             }
                             maplist+=`<div class="map" id="mapset-${beatmapset.id}">
@@ -248,10 +260,11 @@
                     })
                     lastpage = 1;
                     let = numberDiv = document.getElementsByClassName('map');
-                    if(maplist != "" && numberDiv.length >= 20) {
+                    if(maplist != "") {
                         maplist+=`<div id="nextPageButton"><i onclick="loadMore()" class="fas fa-angle-down fa-3x loadNext"></i></div>`
                         document.getElementById("maplist").innerHTML = maplist;
                         document.getElementById('footer').style.opacity = "1";
+                        document.getElementById("loader-proc").style.display = "none";
                         loaded = true;
                     } else {
                         maplist+=`<div id="nextPageButton"><i onclick="loadMore()" class="fas fa-angle-down fa-3x loadNext"></i></div>`
@@ -262,14 +275,11 @@
             }
             
             function loadMore() {
+                if(cancel != 0) return;
                 lastpage++;
-                if(start == 0) {
-                    document.getElementById("nextPageButton").parentNode.removeChild(document.getElementById("nextPageButton"));
-                }
                 var url = `https://osu.ppy.sh/beatmapsets/search?${querystring.stringify(Object.assign(lastparams, {page: lastpage}))}`;
                 if(start == 0) {
-                    document.getElementById("maplist").innerHTML += `<div id="loadingNextPage"><i class="fas fa-spinner fa-2x fa-spin loadingNext"></i></div>`;
-                    start++;
+                    document.getElementById("loader-proc").style.display = "flex";
                 }
                 request.get(url, function(err, res, body) {
                     if(err) {
@@ -283,7 +293,8 @@
                     }
                     let beatmapsets = JSON.parse(body).beatmapsets;
                     if(beatmapsets.length == 0) {
-                        document.getElementById("loadingNextPage").parentNode.removeChild(document.getElementById("loadingNextPage"));
+                        document.getElementById("loader-proc").style.display = "none";
+                        document.getElementById("nextPageButton").parentNode.removeChild(document.getElementById("nextPageButton"));
                         document.getElementById("maplist").innerHTML += "<h2>Nothing found</h2>";
                         return;
                     }
@@ -349,7 +360,7 @@
                                 }
                             } else {
                                 diffs.forEach(diff => {
-                                    difficulties+=`<i title="${diff.version} ${diff.difficulty_rating.toPrecision(3)}★ \nAR:${diff.ar} OD:${diff.accuracy} CS:${diff.cs} HP:${diff.cs} ${diff.drain}" style="color: ${getDiffColor(diff.difficulty_rating)}" class="fal diff fa-extra-mode-${diff.mode}"></i>`;
+                                    difficulties+=`<i title="${diff.version} ${diff.difficulty_rating.toPrecision(3)}★ \nAR:${diff.ar} OD:${diff.accuracy} CS:${diff.cs} HP:${diff.drain}" style="color: ${getDiffColor(diff.difficulty_rating)}" class="fal diff fa-extra-mode-${diff.mode}"></i>`;
                                 })
                             }
                             maplist+=`<div class="map" id="mapset-${beatmapset.id}">
@@ -372,19 +383,20 @@
                     })
                     let = numberDiv = document.getElementsByClassName('map');
                     console.log(numberDiv.length)
-                    if(maplist != "" && numberDiv.length >= 20) {
+                    if(maplist != "" && numberDiv.length >= 10) {
                         if(!loaded) {
                             loaded = true;
                             document.getElementById('footer').style.opacity = "1";
                         }
-                        document.getElementById("loadingNextPage").parentNode.removeChild(document.getElementById("loadingNextPage"));
+                        document.getElementById("loader-proc").style.display = "none";
+                        document.getElementById("nextPageButton").parentNode.removeChild(document.getElementById("nextPageButton"));
                         maplist+=`<div id="nextPageButton"><i onclick="loadMore()" class="fas fa-angle-down fa-3x loadNext"></i></div>`
                         document.getElementById("maplist").innerHTML += maplist;
                         start = 0;
+                        cancel = 0;
                     } else {
-                        if(start == 0) {
-                            maplist+=`<div id="nextPageButton"><i onclick="loadMore()" class="fas fa-angle-down fa-3x loadNext"></i></div>`
-                        }
+                        document.getElementById("nextPageButton").parentNode.removeChild(document.getElementById("nextPageButton"));
+                        maplist+=`<div id="nextPageButton"><i onclick="loadMore()" class="fas fa-angle-down fa-3x loadNext"></i></div>`
                         document.getElementById("maplist").innerHTML += maplist;
                         loadMore();
                     }
@@ -406,7 +418,7 @@
                 }
 
                 let button = document.getElementById(`preview-${id}`);
-                audio.volume = 0.2;
+                audio.volume = volume;
                 if(document.getElementById(`preview-${id}`).classList.contains("fa-play")) {
                     if(playingID != 0) {
                         if(document.getElementById(`preview-${playingID}`)) {
@@ -561,6 +573,69 @@
             function outputHpUpdate(vol) {
                 document.querySelector('#output-hp').innerHTML = "HP >= " + document.querySelector('#search-hp').value ;
             }
+
+            window.onload = function () {
+                document.getElementById("volume").style.width = volume*100 + "vw";
+            }
+
+            let openedVolume = 0;
+            document.onkeydown = function(evt) {
+                evt = evt || window.event;
+                var isEscape = false;
+                var volumeUp = false;
+                var volumeDown = false;
+                if ("key" in evt) {
+                    isEscape = (evt.key == "Escape" || evt.key == "Esc");
+                } else {
+                    isEscape = (evt.keyCode == 27);
+                }
+                if ("key" in evt) {
+                    volumeDown = (evt.key == "_" || evt.key == "_");
+                } else {
+                    volumeDown = (evt.keyCode == 173);
+                }
+                if ("key" in evt) {
+                    volumeUp = (evt.key == "+" || evt.key == "+");
+                } else {
+                    volumeUp = (evt.keyCode == 18);
+                }
+                if (volumeDown) {
+                    let audio = document.getElementById("preview");
+                    if(volume <= 0.75 && volume > 0) volume -= 0.05;
+                    document.getElementById("volume").style.width = volume*100 + "vw";
+                    document.getElementsByClassName("volumebg")[0].style.bottom = "10px";
+                    document.getElementById("volume").style.bottom = "10px";
+                    audio.volume = volume;
+                    if(openedVolume == 0) {
+                        openedVolume++;
+                        setTimeout(function () {
+                                document.getElementsByClassName("volumebg")[0].style.bottom = "-10vh";
+                                document.getElementById("volume").style.bottom = "-10vh";
+                                openedVolume = 0;
+                        }, 2000)
+                    }
+                }
+                if (volumeUp) {
+                    let audio = document.getElementById("preview");
+                    if(volume <= 0.65) volume += 0.05;
+                    document.getElementById("volume").style.width = volume*100 + "vw";
+                    document.getElementsByClassName("volumebg")[0].style.bottom = "10px";
+                    document.getElementById("volume").style.bottom = "10px";
+                    audio.volume = volume;
+                    if(openedVolume == 0) {
+                        openedVolume++;
+                        setTimeout(function () {
+                                document.getElementsByClassName("volumebg")[0].style.bottom = "-10vh";
+                                document.getElementById("volume").style.bottom = "-10vh";
+                                openedVolume = 0;
+                        }, 2000)
+                    }
+                }
+                if (isEscape) {
+                    document.getElementById("loader-proc").style.display = "none";
+                    cancel++;
+                }
+            };
         </script>        
     </head>
     <body style="background: rgb(209, 0, 108);">
@@ -684,5 +759,7 @@
         <div id="notifications">
             
         </div>
+        <div id="volume-overlay"><div id="volume">Volume</div><div class="volumebg"></div></div>
+        <section id="loader-proc" class="loaders"><h5>To cancel the search press ESC!</h5><span class="loader loader-quart"></span></section>
         <h3 id="footer">Created by <a onclick="openSite('https://vk.com/octopussx')">OctopuSS</a> & <a onclick ="openSite('https://4fun.glitch.me')">4FuN</a></h3>
 </html>
