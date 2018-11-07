@@ -889,3 +889,7 @@ h5 {
     position: fixed;
     bottom: -10vw;
 }
+
+.label-click {
+    cursor: pointer;
+}
