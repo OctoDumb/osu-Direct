@@ -9,6 +9,7 @@ body {
     color: white;
     height: 100vh;
     opacity: 1;
+    scroll-behavior: smooth;
 }
 
 h1 {
@@ -892,4 +893,8 @@ h5 {
 
 .label-click {
     cursor: pointer;
+}
+
+.fa-heart {
+    transition: 0.5s ease;
 }

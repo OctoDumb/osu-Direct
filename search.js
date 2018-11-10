@@ -45,13 +45,16 @@ let start = 0;
 
 let volume = 0.2;
 
+let localUserCheck;
+
 let cancel = 0;
 
 var arrayOfDownloaded = [];
 rawDirs.forEach(dirr => {
-    if(dirr.indexOf(".osz") == -1) arrayOfDownloaded.push(Number(dirr.split(" ")[0]))
-    else arrayOfDownloaded.push(Number(dirr.split(".osz")[0]));
+    if(dirr.indexOf(".osz") == -1) arrayOfDownloaded.push(Number(dirr.split("n").join("").split(" ")[0]))
+    else arrayOfDownloaded.push(Number(dirr.split(" ")[0]));
 })
+
 
 request.post({
     url: 'https://osu.ppy.sh/forum/ucp.php?mode=login',
@@ -71,9 +74,12 @@ request.post({
         window.close();
     }
     authed = true;
+    fs.writeFileSync("./test.html", body)
+    localUserCheck = body.split("localUserCheck = \"")[1].split("\";")[0];
     document.getElementById("maplist").innerHTML = "<h2>Authorized</h2>"
     searchBeatmapsets();
 })
+
 
 function formatUpper(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -205,7 +211,7 @@ function searchBeatmapsets() {
             if(document.getElementById('search-downloaded').checked) downloadedIgnored = true;
             if(downloadedIgnored && ignored.indexOf(beatmapset.id) == -1 && stats) {
                 let difficulties = "";
-                if(diffs.length > 12) {
+                if(diffs.length > 11) {
                     var nowmode = 0;
                     var count = 0;
                     diffs.forEach((diff, ind) => {
@@ -259,6 +265,10 @@ function searchBeatmapsets() {
                         difficulties+=`<i title="${diff.version} ${diff.difficulty_rating.toPrecision(3)}★ \nAR:${diff.ar} OD:${diff.accuracy} CS:${diff.cs} HP:${diff.drain}" style="color: ${getDiffColor(diff.difficulty_rating)}" class="fal diff fa-extra-mode-${diff.mode}"></i>`;
                     })
                 }
+                let favor = 'style="transform: scale(0.95);" onclick="favouriteBeatmapset('+ beatmapset.id +')" class="fas favor-' + beatmapset.id + ' fa-heart"';
+                if(beatmapset.has_favourited == true) {
+                    favor = 'style="transform: scale(0.95); color: rgb(209, 0, 108)" onclick="unfavouriteBeatmapset('+ beatmapset.id +');" class="fas favor-' + beatmapset.id + ' fa-heart"';
+                }
                 maplist+=`<div class="map" id="mapset-${beatmapset.id}">
                     <div class="map-header">
                         <img src="${beatmapset.covers.cover}" alt="">
@@ -271,6 +281,7 @@ function searchBeatmapsets() {
                     <div class="creator">by ${beatmapset.creator}</div>
                     <a title="Download beatmap" class="download"><i onclick="donwloadBeatmapset(${beatmapset.id}, \`${beatmapset.title}\`, \`${beatmapset.artist}\`)" class="fas fa-download"></i></a>
                     <a title="Link to beatmap" class="link"><i onclick="openLink(${beatmapset.id})" class="fas fa-link"></i></a>
+                    <a title="Favourite this beatmapset" class="link"><i ${favor}></i></a>
                     <a title="Ignore beatmap" class="ignore"><i onclick="ignoreMapset(${beatmapset.id}, \`${beatmapset.title}\`, \`${beatmapset.artist}\`)" class="fas fa-times"></i></a>
                     <div id="alldiff">${difficulties}</div>
                 </div>`;
@@ -292,6 +303,22 @@ function searchBeatmapsets() {
             loadMore();
         }
     });
+}
+
+function favouriteBeatmapset(id) {
+    request.get(`https://osu.ppy.sh/web/favourite.php?localUserCheck=${localUserCheck}&a=${id}`, (err, res, body) => {
+        createNotification('started', 'Added to favourites');
+        document.getElementsByClassName("favor-" + id)[0].style.color = "rgb(209, 0, 108)";
+        document.getElementsByClassName("favor-" + id)[0].setAttribute("onclick", `unfavouriteBeatmapset(${id})`)
+    })
+}
+
+function unfavouriteBeatmapset(id) {
+    request.get(`https://osu.ppy.sh/web/favourite.php?localUserCheck=${localUserCheck}&d=${id}`, (err, res, body) => {
+        createNotification('started', 'Removed from favourites');
+        document.getElementsByClassName("favor-" + id)[0].style.color = "rgb(0, 0, 0)";
+        document.getElementsByClassName("favor-" + id)[0].setAttribute("onclick", `favouriteBeatmapset(${id})`)
+    })
 }
 
 function loadMore() {
@@ -352,7 +379,7 @@ function loadMore() {
             if(document.getElementById('search-downloaded').checked) downloadedIgnored = true;
             if(downloadedIgnored && ignored.indexOf(beatmapset.id) == -1 && stats) {
                 let difficulties = "";
-                if(diffs.length > 12) {
+                if(diffs.length > 11) {
                     var nowmode = 0;
                     var count = 0;
                     diffs.forEach((diff, ind) => {
@@ -406,6 +433,10 @@ function loadMore() {
                         difficulties+=`<i title="${diff.version} ${diff.difficulty_rating.toPrecision(3)}★ \nAR:${diff.ar} OD:${diff.accuracy} CS:${diff.cs} HP:${diff.drain}" style="color: ${getDiffColor(diff.difficulty_rating)}" class="fal diff fa-extra-mode-${diff.mode}"></i>`;
                     })
                 }
+                let favor = 'style="transform: scale(0.95);" onclick="favouriteBeatmapset('+ beatmapset.id +')" class="fas favor-' + beatmapset.id + ' fa-heart"';
+                if(beatmapset.has_favourited == true) {
+                    favor = 'style="transform: scale(0.95); color: rgb(209, 0, 108)" onclick="unfavouriteBeatmapset('+ beatmapset.id +');" class="fas favor-' + beatmapset.id + ' fa-heart"';
+                }
                 maplist+=`<div class="map" id="mapset-${beatmapset.id}">
                     <div class="map-header">
                         <img src="${beatmapset.covers.cover}" alt="">
@@ -418,6 +449,7 @@ function loadMore() {
                     <div class="creator">by ${beatmapset.creator}</div>
                     <a title="Download beatmap" class="download"><i onclick="donwloadBeatmapset(${beatmapset.id}, \`${beatmapset.title}\`, \`${beatmapset.artist}\`)" class="fas fa-download"></i></a>
                     <a title="Link to beatmap" class="link"><i onclick="openLink(${beatmapset.id})" class="fas fa-link"></i></a>
+                    <a title="Favourite this beatmapset" class="link"><i ${favor}></i></a>
                     <a title="Ignore beatmap" class="ignore"><i onclick="ignoreMapset(${beatmapset.id}, \`${beatmapset.title}\`, \`${beatmapset.artist}\`)" class="fas fa-times"></i></a>
                     <div id="alldiff">${difficulties}</div>
                 </div>`;
@@ -451,7 +483,7 @@ var playingID = 0;
 
 function previewMusic(id) {
     if(hint == 0) {
-        createNotification('started', 'For control volume press Shift + "+" or Shift + "-" '); 
+        createNotification('started', 'Volume controls: Shift + "+" or Shift + "-" '); 
         hint++;
     }
     let previewURL = `https://b.ppy.sh/preview/${id}.mp3`;
@@ -523,13 +555,13 @@ window.onscroll = function() {
 }
 
 function donwloadBeatmapset(id, title, artist) {
-    if(document.getElementById('search-novideo').checked) id = id + "n";
     var alreadyDownloading = false;
     downloads.forEach(dl => {
         if(dl == id) {
             alreadyDownloading = true;
         }
     })
+    if(document.getElementById('search-novideo').checked) id = id + "n";
     if(alreadyDownloading) {
         var scrolled = window.pageYOffset || document.documentElement.scrollTop;
         setTimeout(function() {
@@ -555,7 +587,7 @@ function donwloadBeatmapset(id, title, artist) {
         <div class="dlprogress-bar" id="progress-${id}"></div>
         </div>`
     document.getElementById("downloads-list").innerHTML += dlProgress;
-    let stream = fs.createWriteStream(`./Beatmapsets/${id}.osz`);
+    let stream = fs.createWriteStream(`./Beatmapsets/${id.toString().split("n").join("")} ${title} - ${artist}.osz`);
     // let progressCount = document.getElementById(`percent-${id}`);
     // let progressCount = new CountUp(`percent-${id}`, 0, 0, 0, 1, {suffix: "%"});
     // progressCount.start();
@@ -576,11 +608,11 @@ function donwloadBeatmapset(id, title, artist) {
         })
         stream.end();
         // fs.renameSync(`./Beatmapsets/${id}.osz`, `${dlPath}/${id}.osz`);
-        let rs = fs.createReadStream(`./Beatmapsets/${id}.osz`);
-        let ws = fs.createWriteStream(`${dlPath}/${id}.osz`);
+        let rs = fs.createReadStream(`./Beatmapsets/${id.toString().split("n").join("")} ${title} - ${artist}.osz`);
+        let ws = fs.createWriteStream(`${dlPath}/${id.toString().split("n").join("")} ${title} - ${artist}.osz`);
         rs.pipe(ws);
         rs.on('end', () => {
-            fs.unlinkSync(`./Beatmapsets/${id}.osz`);
+            fs.unlinkSync(`./Beatmapsets/${id.toString().split("n").join("")} ${title} - ${artist}.osz`);
             document.getElementById(`dl-${id}`).parentNode.removeChild(document.getElementById(`dl-${id}`));
             createNotification('success', `Finished downloading ${title} - ${artist}`);
         })
