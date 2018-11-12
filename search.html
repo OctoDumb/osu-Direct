@@ -18,6 +18,7 @@
         </audio>
         <i onclick="window.close()" class="fas exit fa-times"></i>
         <i onclick="hidetray()" class="fas tray fa-minus"></i>
+        <i onclick="openSettings()" class="fas settings fa-cog"></i>
         <i id="arrowup" onclick="window.scrollTo({top: 0, left: 0, behavior: 'smooth'})" class="fas arrowup fa-chevron-circle-up fa-3x"></i>
         <div id="downloads" onmouseover="document.getElementById('downloads').classList.add('open')" onmouseout="document.getElementById('downloads').classList.remove('open')" class="downloads">
             <div id="dback"></div>
@@ -48,6 +49,7 @@
                     <option value="2">osu!catch</option>
                     <option value="3">osu!mania</option>
                 </select>
+                <i id="hide-op" style="display: none;" onclick="openOptions()" title="Hide options" class="fas fa-angle-up fa-2x"></i>
                 <i onclick="searchBeatmapsets()" class="fas fa-search"></i>
             </form>
             <div onclick="openOptions()" id="more-op"><h4>More Search Options</h4><i class="fas fa-angle-down fa-2x more-options"></i></div>
@@ -88,6 +90,10 @@
                     <option value="rating_desc">Rating</option>
                     <option value="plays_desc">Plays</option>
                 </select>
+                <div class="form-group form-range">
+                    <label onclick="changeFormBpm()" for="search-bpm" id="output-bpm" class="label-click">BPM </label>
+                    <input type="range" min="0" max="500" value="0" oninput="outputBpmUpdate(value)" step="5" class="form-control-range input-range" id="search-bpm">
+                </div>
             </div>
             <div id="category-3" class="category">
                 <div class="form-group form-range">
@@ -135,6 +141,48 @@
         </div>
         <div id="notifications">
             
+        </div>
+        <div id="settings-back">
+            <div id="settings-window">
+                <i onclick="openSettings()" class="fas settings-close fa-times fa-lg"></i>
+                <div id="setting-options">
+                    <div class="background-options"></div>
+                    <h6>Settings</h6>
+                    <div id="general-op" onclick="openGeneralOptions()" class="option">
+                        <h1>General</h1>
+                    </div>
+                    <div id="myacc-op" onclick="openMyaccOptions()" class="option option-selected">
+                        <h1>My Account</h1>
+                    </div>
+                    <div id="backup-op" onclick="openbackupOptions()" class="option">
+                        <h1>Backup</h1>
+                    </div>
+                    <div id="change-op" onclick="openChangelogOptions()" class="option">
+                        <h1>Changelog</h1>
+                    </div>
+                </div>
+                <div id="settings-main">
+                    <h1>My Account</h1>
+                    <div id="my-account-info-wrapper">
+                        <div id="my-account-info">
+                            <div id="profile-pic">
+
+                            </div>
+                            <div id="account-fields">
+                            <div class="account-field">
+                                <h1 class="label">USERNAME</h1>
+                                <input class="input" id="username" type="text" value="Bloop">
+                            </div>
+                            <div class="account-field">
+                                <h1 class="label">CURRENT PASSWORD</h1>
+                                <input class="input" id="password" type="password" value="bloopiedoopiedoo">
+                            </div>
+                            <center><input onclick="signout()" style="transform: translateX(-20px); margin: 10px; margin-bottom: 5px;" type="submit" class="btn btn-danger" value="Sign out"></center>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div id="volume-overlay"><div id="volume">Volume</div><div class="volumebg"></div></div>
         <section id="loader-proc" class="loaders"><h5>To cancel the search press ESC!</h5><span class="loader loader-quart"></span></section>

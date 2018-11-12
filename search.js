@@ -64,6 +64,8 @@ let localUserCheck;
 
 let cancel = 0;
 
+let userid = 0;
+
 var arrayOfDownloaded = [];
 rawDirs.forEach(dirr => {
     if(dirr.indexOf(".osz") == -1) arrayOfDownloaded.push(Number(dirr.split("n").join("").split(" ")[0]))
@@ -91,6 +93,7 @@ request.post({
     authed = true;
     fs.writeFileSync("./test.html", body)
     localUserCheck = body.split("localUserCheck = \"")[1].split("\";")[0];
+    userid = body.split("localUserId = ")[1].split(";")[0];
     document.getElementById("maplist").innerHTML = "<h2>Authorized</h2>"
     searchBeatmapsets();
 })
@@ -150,6 +153,7 @@ let arznak = ">=";
 let odznak = ">=";
 let hpznak = ">=";
 let csznak = ">=";
+let bpmznak = ">=";
 
 function searchBeatmapsets() {
     cancel = 0;
@@ -164,10 +168,6 @@ function searchBeatmapsets() {
         createNotification('started', `Wait until the search is complete.`);
         return
     }
-    document.getElementById('more-op').style.display = "flex";
-    document.getElementById('category').style.display = "none";
-    document.getElementById('category-2').style.display = "none";
-    document.getElementById('category-3').style.display = "none";
     let params = {};
     if(document.getElementById("search-query").value != "") params.q = document.getElementById("search-query").value;
     if(document.getElementById('search-genre').value != "") params.g = document.getElementById("search-genre").value;
@@ -201,6 +201,7 @@ function searchBeatmapsets() {
             let cs = beatmapsets[ind].beatmaps[diffs.length-1].cs;
             let od = beatmapsets[ind].beatmaps[diffs.length-1].accuracy;
             let hp = beatmapsets[ind].beatmaps[diffs.length-1].drain;
+            let bpm = Number(beatmapset.bpm);
             let statsStar = star >= document.querySelector('#search-star').value;
             if (starznak == "<=") {
                 statsStar = star <= document.querySelector('#search-star').value;
@@ -221,7 +222,11 @@ function searchBeatmapsets() {
             if (hpznak == "<=") {
                 statsHp = hp <= document.querySelector('#search-hp').value;
             }
-            let stats = statsStar && statsAr && statsOd && statsCs && statsHp;
+            let statsBpm = bpm >= document.querySelector('#search-bpm').value;
+            if (bpmznak == "<=") {
+                statsBpm = bpm <= document.querySelector('#search-bpm').value;
+            }
+            let stats = statsStar && statsAr && statsOd && statsCs && statsHp && statsBpm;
             let downloadedIgnored = arrayOfDownloaded.indexOf(beatmapset.id) == -1;
             if(document.getElementById('search-downloaded').checked) downloadedIgnored = true;
             if(downloadedIgnored && ignored.indexOf(beatmapset.id) == -1 && stats) {
@@ -236,19 +241,19 @@ function searchBeatmapsets() {
                             if(count != 0) {
                                 switch(nowmode) {
                                     case 0: {
-                                        difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-osu"></i> ${count}</div>`;
+                                        difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain} BPM:${beatmapset.bpm}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-osu"></i> ${count}</div>`;
                                         break;
                                     }
                                     case 1: {
-                                        difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-taiko"></i> ${count}</div>`;
+                                        difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain} BPM:${beatmapset.bpm}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-taiko"></i> ${count}</div>`;
                                         break;
                                     }
                                     case 2: {
-                                        difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-fruits"></i> ${count}</div>`;
+                                        difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain} BPM:${beatmapset.bpm}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-fruits"></i> ${count}</div>`;
                                         break;
                                     }
                                     case 3: {
-                                        difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-mania"></i> ${count}</div>`;
+                                        difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain} BPM:${beatmapset.bpm}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-mania"></i> ${count}</div>`;
                                         break;
                                     }
                                 }
@@ -259,25 +264,25 @@ function searchBeatmapsets() {
                     })
                     switch(nowmode) {
                         case 0: {
-                            difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-osu"></i> ${count}</div>`;
+                            difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain} BPM:${beatmapset.bpm}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-osu"></i> ${count}</div>`;
                             break;
                         }
                         case 1: {
-                            difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-taiko"></i> ${count}</div>`;
+                            difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain} BPM:${beatmapset.bpm}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-taiko"></i> ${count}</div>`;
                             break;
                         }
                         case 2: {
-                            difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-fruits"></i> ${count}</div>`;
+                            difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain} BPM:${beatmapset.bpm}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-fruits"></i> ${count}</div>`;
                             break;
                         }
                         case 3: {
-                            difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-mania"></i> ${count}</div>`;
+                            difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain} BPM:${beatmapset.bpm}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-mania"></i> ${count}</div>`;
                             break;
                         }
                     }
                 } else {
                     diffs.forEach(diff => {
-                        difficulties+=`<i title="${diff.version} ${diff.difficulty_rating.toPrecision(3)}★ \nAR:${diff.ar} OD:${diff.accuracy} CS:${diff.cs} HP:${diff.drain}" style="color: ${getDiffColor(diff.difficulty_rating)}" class="fal diff fa-extra-mode-${diff.mode}"></i>`;
+                        difficulties+=`<i title="${diff.version} ${diff.difficulty_rating.toPrecision(3)}★ \nAR:${diff.ar} OD:${diff.accuracy} CS:${diff.cs} HP:${diff.drain} BPM:${beatmapset.bpm}" style="color: ${getDiffColor(diff.difficulty_rating)}" class="fal diff fa-extra-mode-${diff.mode}"></i>`;
                     })
                 }
                 let favor = 'style="transform: scale(0.95);" onclick="favouriteBeatmapset('+ beatmapset.id +')" class="fas favor-' + beatmapset.id + ' fa-heart"';
@@ -369,6 +374,7 @@ function loadMore() {
             let cs = beatmapsets[ind].beatmaps[diffs.length-1].cs;
             let od = beatmapsets[ind].beatmaps[diffs.length-1].accuracy;
             let hp = beatmapsets[ind].beatmaps[diffs.length-1].drain;
+            let bpm = Number(beatmapset.bpm);
             let statsStar = star >= document.querySelector('#search-star').value;
             if (starznak == "<=") {
                 statsStar = star <= document.querySelector('#search-star').value;
@@ -389,7 +395,11 @@ function loadMore() {
             if (hpznak == "<=") {
                 statsHp = hp <= document.querySelector('#search-hp').value;
             }
-            let stats = statsStar && statsAr && statsOd && statsCs && statsHp;
+            let statsBpm = bpm >= document.querySelector('#search-bpm').value;
+            if (bpmznak == "<=") {
+                statsBpm = bpm <= document.querySelector('#search-bpm').value;
+            }
+            let stats = statsStar && statsAr && statsOd && statsCs && statsHp && statsBpm;
             let downloadedIgnored = arrayOfDownloaded.indexOf(beatmapset.id) == -1;
             if(document.getElementById('search-downloaded').checked) downloadedIgnored = true;
             if(downloadedIgnored && ignored.indexOf(beatmapset.id) == -1 && stats) {
@@ -404,19 +414,19 @@ function loadMore() {
                             if(count != 0) {
                                 switch(nowmode) {
                                     case 0: {
-                                        difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-osu"></i> ${count}</div>`;
+                                        difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain} BPM:${beatmapset.bpm}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-osu"></i> ${count}</div>`;
                                         break;
                                     }
                                     case 1: {
-                                        difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-taiko"></i> ${count}</div>`;
+                                        difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain} BPM:${beatmapset.bpm}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-taiko"></i> ${count}</div>`;
                                         break;
                                     }
                                     case 2: {
-                                        difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-fruits"></i> ${count}</div>`;
+                                        difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain} BPM:${beatmapset.bpm}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-fruits"></i> ${count}</div>`;
                                         break;
                                     }
                                     case 3: {
-                                        difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-mania"></i> ${count}</div>`;
+                                        difficulties+=`<div title="${diffs[ind-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[ind-1].ar} OD:${diffs[ind-1].accuracy} CS:${diffs[ind-1].cs} HP:${diffs[ind-1].drain} BPM:${beatmapset.bpm}" class="diff2"><i style="color: ${getDiffColor(diffs[ind-1].difficulty_rating)}" class="fal fa-extra-mode-mania"></i> ${count}</div>`;
                                         break;
                                     }
                                 }
@@ -427,25 +437,25 @@ function loadMore() {
                     })
                     switch(nowmode) {
                         case 0: {
-                            difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-osu"></i> ${count}</div>`;
+                            difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain} BPM:${beatmapset.bpm}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-osu"></i> ${count}</div>`;
                             break;
                         }
                         case 1: {
-                            difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-taiko"></i> ${count}</div>`;
+                            difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain} BPM:${beatmapset.bpm}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-taiko"></i> ${count}</div>`;
                             break;
                         }
                         case 2: {
-                            difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-fruits"></i> ${count}</div>`;
+                            difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain} BPM:${beatmapset.bpm}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-fruits"></i> ${count}</div>`;
                             break;
                         }
                         case 3: {
-                            difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-mania"></i> ${count}</div>`;
+                            difficulties+=`<div title="${diffs[diffs.length-1].difficulty_rating.toPrecision(3)}★ \nAR:${diffs[diffs.length-1].ar} OD:${diffs[diffs.length-1].accuracy} CS:${diffs[diffs.length-1].cs} HP:${diffs[diffs.length-1].drain} BPM:${beatmapset.bpm}" class="diff2"><i style="color: ${getDiffColor(diffs[diffs.length-1].difficulty_rating)}" class="fal fa-extra-mode-mania"></i> ${count}</div>`;
                             break;
                         }
                     }
                 } else {
                     diffs.forEach(diff => {
-                        difficulties+=`<i title="${diff.version} ${diff.difficulty_rating.toPrecision(3)}★ \nAR:${diff.ar} OD:${diff.accuracy} CS:${diff.cs} HP:${diff.drain}" style="color: ${getDiffColor(diff.difficulty_rating)}" class="fal diff fa-extra-mode-${diff.mode}"></i>`;
+                        difficulties+=`<i title="${diff.version} ${diff.difficulty_rating.toPrecision(3)}★ \nAR:${diff.ar} OD:${diff.accuracy} CS:${diff.cs} HP:${diff.drain} BPM:${beatmapset.bpm}" style="color: ${getDiffColor(diff.difficulty_rating)}" class="fal diff fa-extra-mode-${diff.mode}"></i>`;
                     })
                 }
                 let favor = 'style="transform: scale(0.95);" onclick="favouriteBeatmapset('+ beatmapset.id +')" class="fas favor-' + beatmapset.id + ' fa-heart"';
@@ -641,12 +651,26 @@ function checkDL(event) {
     } else return true;
 }
 
+let open = 0;
+
 function openOptions() {
-    document.getElementById('more-op').style.display = "none";
-    document.getElementById('category').style.display = "flex";
-    document.getElementById('category-2').style.display = "flex";
-    document.getElementById('category-3').style.display = "flex";
+    if(open == 0) {
+        document.getElementById('more-op').style.display = "none";
+        document.getElementById('hide-op').style.display = "block";
+        document.getElementById('category').style.display = "flex";
+        document.getElementById('category-2').style.display = "flex";
+        document.getElementById('category-3').style.display = "flex";
+        open++;
+    } else {
+        document.getElementById('more-op').style.display = "flex";
+        document.getElementById('hide-op').style.display = "none";
+        document.getElementById('category').style.display = "none";
+        document.getElementById('category-2').style.display = "none";
+        document.getElementById('category-3').style.display = "none";
+        open = 0;
+    }
 }
+
 
 function changeFormStar() {
     if(starznak == ">=") {
@@ -693,9 +717,23 @@ function changeFormHp() {
     document.querySelector('#output-hp').innerHTML = "HP " + hpznak + " " + document.querySelector('#search-hp').value ;
 }
 
+function changeFormBpm() {
+    if(bpmznak == ">=") {
+        bpmznak = "<="
+    } else {
+        bpmznak = ">="
+    }
+    document.querySelector('#output-bpm').innerHTML = "BPM " + bpmznak + " " + document.querySelector('#search-bpm').value ;
+}
+
 function outputStarUpdate(vol) {
     document.querySelector('#output-star').innerHTML = "Star " + starznak + " " + document.querySelector('#search-star').value + "*";
 }
+
+function outputBpmUpdate(vol) {
+    document.querySelector('#output-bpm').innerHTML = "BPM " + bpmznak + " " + document.querySelector('#search-bpm').value;
+}
+
 
 function outputArUpdate(vol) {
     document.querySelector('#output-ar').innerHTML = "AR " + arznak + " " + document.querySelector('#search-ar').value ;
@@ -775,3 +813,67 @@ document.onkeydown = function(evt) {
         cancel++;
     }
 };
+
+let settingopen = 0;
+
+function openSettings() {
+    if(settingopen == 0) {
+        document.getElementById('settings-back').style.display = "flex";
+        setTimeout(function () {
+            document.getElementById('settings-window').style.opacity = "1";
+            document.getElementById('settings-window').style.transform = "scale(1)";
+        }, 100)
+        settingopen++;
+    } else {
+        document.getElementById('settings-window').style.opacity = "0";
+        document.getElementById('settings-window').style.transform = "scale(1.1)";
+        setTimeout(function () {
+            document.getElementById('settings-back').style.display = "none";            
+        }, 500)
+        settingopen = 0;
+    }
+    document.getElementById('username').value = user.username;
+    document.getElementById('password').value = user.password;
+    document.getElementById('profile-pic').style.background = 'url("https://a.ppy.sh/' + userid + '")'
+}
+
+
+function signout() {
+    fs.unlinkSync("./loginData.json");
+    window.close();
+}
+
+function openGeneralOptions() {
+    document.getElementById('general-op').className = "option option-selected";
+    document.getElementById('backup-op').className = "option";
+    document.getElementById('myacc-op').className = "option";
+    document.getElementById('change-op').className = "option";
+    document.getElementById('settings-main').innerHTML = '<h1>General</h1>';
+}
+
+function openMyaccOptions() {
+    document.getElementById('myacc-op').className = "option option-selected";
+    document.getElementById('backup-op').className = "option";
+    document.getElementById('general-op').className = "option";
+    document.getElementById('change-op').className = "option";
+    document.getElementById('settings-main').innerHTML = '<h1>My Account</h1> <div id="my-account-info-wrapper"> <div id="my-account-info"> <div id="profile-pic"> </div> <div id="account-fields"> <div class="account-field"> <h1 class="label">USERNAME</h1> <input class="input" id="username" type="text" value="Bloop"> </div> <div class="account-field"> <h1 class="label">CURRENT PASSWORD</h1> <input class="input" id="password" type="password" value="bloopiedoopiedoo"> </div> <center><input onclick="signout()" style="transform: translateX(-20px); margin: 10px; margin-bottom: 5px;" type="submit" class="btn btn-danger" value="Sign out"></center> </div> </div> </div>';
+    document.getElementById('username').value = user.username;
+    document.getElementById('password').value = user.password;
+    document.getElementById('profile-pic').style.background = 'url("https://a.ppy.sh/' + userid + '")';
+}
+
+function openbackupOptions() {
+    document.getElementById('backup-op').className = "option option-selected";
+    document.getElementById('myacc-op').className = "option";
+    document.getElementById('general-op').className = "option";
+    document.getElementById('change-op').className = "option";
+    document.getElementById('settings-main').innerHTML = '<h1>Backup</h1>';
+}
+
+function openChangelogOptions() {
+    document.getElementById('change-op').className = "option option-selected";
+    document.getElementById('myacc-op').className = "option";
+    document.getElementById('general-op').className = "option";
+    document.getElementById('backup-op').className = "option";
+    document.getElementById('settings-main').innerHTML = '<h1>Changelog</h1>';
+}

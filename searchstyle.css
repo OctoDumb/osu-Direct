@@ -89,8 +89,14 @@ label {
     color: white;
     position: fixed;
     top: 0.5vh;
+    transform: rotate(0deg);
     z-index: 100 !important;
     right: 5px;
+    transition: 1s;
+}
+
+.exit:hover {
+    transform: rotate(180deg);
 }
 
 #container {
@@ -333,7 +339,28 @@ h2 {
     position: fixed;
     top: 0.5vh;
     z-index: 100 !important;
+    transform: rotate(0deg);
     right: 25px;
+    transition: 1s;
+}
+
+.tray:hover {
+    transform: rotate(180deg);
+}
+
+.settings {
+    cursor: pointer;
+    color: white;
+    position: fixed;
+    top: 0.5vh;
+    z-index: 100 !important;
+    right: 45px;
+    transform: scale(0.8) rotate(0deg);
+    transition: 1s;
+}
+
+.settings:hover {
+    transform: scale(0.8) rotate(180deg);
 }
 
 .downloads {
@@ -897,4 +924,176 @@ h5 {
 
 .fa-heart {
     transition: 0.5s ease;
+}
+
+
+#settings-back {
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    z-index: 999;   
+}
+
+#settings-window {
+    width: 75vw;
+    height: 75vh;
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 30px, rgba(0, 0, 0, 0.23) 0px 6px 10px;
+    display: flex;
+    opacity: 0;
+    transform: scale(1.1);
+    border-radius: 20px;
+    background: #323232;
+    z-index: 999;   
+    transition: 0.5s ease;
+}
+
+#setting-options {
+    width: 25%;
+    padding: 10px;
+    height: 75vh;
+    border-radius: 20px;
+    color: white;
+    background: #1e1e1e;
+}
+
+.background-options {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;  
+    z-index: -1;
+    opacity: 0.03;
+    background: url("background.png");
+}
+
+#setting-options h6 {
+    text-align: center;
+    font-size: 24px;
+    margin: 10px;
+    color: #969696;
+    font-weight: 700;
+}
+
+.settings-close {
+    position: absolute;
+    cursor: pointer;
+    top: 15px;
+    right: 15px;
+    color: white;
+    transition: 0.3s ease;
+}
+
+.settings-close:hover {
+    color: rgb(209, 0, 108);
+}
+
+.option {
+    border-radius: 4px;
+    padding: 10px;
+    cursor: pointer;
+    width: 80%;
+    margin: 5px auto;
+    transition: 0.3s;
+}
+
+.option h1 {
+    color: white;
+    font-size: 1em;
+    font-weight: 500;
+    margin: 0px;
+    text-align: left;
+    transition: 0.3s ease;
+}
+
+.option-selected {
+    background-color: rgb(209, 0, 108);
+}
+
+.option:hover {
+    background-color: rgb(209, 0, 108);
+}
+
+#settings-main {
+    color: white;
+    padding: 50px 30px;
+}
+
+#settings-main h1 {
+    color: white;
+    font-size: 0.9em;
+    text-align: left;
+    font-weight: 700;
+    margin: 0px;
+}
+
+#my-account-info-wrapper {
+    background-color: #282828;
+    border: 1px solid #1e1e1e;
+    font-size: 0px;
+    border-radius: 20px;
+    margin-top: 10px;
+    overflow: auto;
+    width: 500px;
+}
+
+#my-account-info-wrapper #my-account-info {
+    overflow: hidden;
+    padding: 10px;
+    white-space: nowrap;
+}
+
+#my-account-info-wrapper #my-account-info #profile-pic {
+    background-color: #1e1e1e;
+    border-radius: 100px;
+    display: inline-block;
+    font-size: medium;
+    height: 70px;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+    width: 70px;
+}
+
+#my-account-info-wrapper #my-account-info #account-fields {
+    display: inline-block;
+    font-size: medium;
+    margin-left: 10px;
+    vertical-align: top;
+    width: calc(100% - 90px);
+}
+
+#my-account-info #account-fields .account-field .label {
+    color: gainsboro;
+    font-size: 0.7em;
+    margin: 0px;
+}
+
+#my-account-info #account-fields .account-field:first-child {
+    margin-top: 0px;
+}
+
+#my-account-info #account-fields .account-field input {
+    background-color: #1e1e1e;
+    border: 1px solid black;
+    border-radius: 2px;
+    color: gainsboro;
+    margin-top: 5px;
+    padding: 10px;
+    outline: none;
+    width: calc(100% - 24px);
+}
+
+#my-account-info #account-fields .account-field {
+    margin-top: 20px;
+}
+
+#profile-pic {
+    background-size: cover !important;
 }

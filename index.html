@@ -254,7 +254,7 @@
 		var incorrect = /You have specified an incorrect password/i;
 
 		var fs = require('fs');
-		var user = JSON.parse(fs.readFileSync("./loginData.json"))
+		var user = JSON.parse(fs.readFileSync("./loginData.json"));
 		
 		const { remote } = require('electron');		
 		const { dialog } = remote;
