@@ -11,11 +11,26 @@ var progress = require('request-progress');
 var fs = require('fs');
 let authed = false;
 let downloads = [];
+var settings = {
+	showDownloaded: false,
+	noVideo: false
+};
 var loaded = false;
 
 let hint = 0;
 
 let nID = 1;
+
+if(fs.existsSync("./settings.json")) {
+	settings = JSON.parse(fs.readFileSync("./settings.json").toString());
+} else {
+	fs.writeFileSync("./settings.json", JSON.stringify(settings));
+}
+
+function editSettings(parameter, value) {
+	settings[parameter] = value;
+	fs.writeFileSync("./settings.json", JSON.stringify(settings));
+}
 
 function hidetray() {
     remote.BrowserWindow.getFocusedWindow().minimize();
