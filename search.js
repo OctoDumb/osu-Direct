@@ -66,13 +66,21 @@ let cancel = 0;
 
 let userid = 0;
 
-var arrayOfDownloaded = [];
-if(!fs.existsSync("./downloaded.json")) rawDirs.forEach(dirr => {
-    if(dirr.indexOf(".osz") != -1) arrayOfDownloaded.push(Number(dirr.split(".")[0].split("n")[0]))
-    else if(dirr != "Failed") arrayOfDownloaded.push(Number(dirr.split(" ")[0]));
-})
+let listrestor = 0;
 
-fs.writeFileSync("./downloaded.json", JSON.stringify(arrayOfDownloaded));
+var arrayOfDownloaded = [];
+if(!fs.existsSync("./downloaded.json")) {
+    rawDirs.forEach(dirr => {
+        if(dirr != NaN) {
+            if(dirr.indexOf(".osz") != -1) arrayOfDownloaded.push(Number(dirr.split(".")[0].split("n")[0]))
+            else if(dirr.split(" ")[0].indexOf('n') > -1) arrayOfDownloaded.push(Number(dirr.split(" ")[0].replace('n', "")));
+            else if(dirr != "Failed") arrayOfDownloaded.push(Number(dirr.split(" ")[0]));
+        }
+    })
+    fs.writeFileSync("./downloaded.json", JSON.stringify(arrayOfDownloaded));
+} else {
+    arrayOfDownloaded = JSON.parse(fs.readFileSync("./downloaded.json"));
+}
 
 request.post({
     url: 'https://osu.ppy.sh/forum/ucp.php?mode=login',
@@ -646,6 +654,10 @@ function donwloadBeatmapset(id, title, artist) {
             fs.unlinkSync(`./Beatmapsets/${id.toString().split("n").join("")} ${title} - ${artist}.osz`);
             document.getElementById(`dl-${id}`).parentNode.removeChild(document.getElementById(`dl-${id}`));
             createNotification('success', `Finished downloading ${title} - ${artist}`);
+            if(title == "Restoring") {
+                listrestor++;
+                restoreBeatmaps(true);
+            }
         })
     })
 }
@@ -922,14 +934,30 @@ function restoreBeatmaps(force) {
     if(force) {
         let existsNow = [];
         fs.readdirSync(dlPath).forEach(dpath => {
-            existsNow.push(dpath.split(" ")[0].split(".")[0]);
+            existsNow.push(dpath.split(" ")[0].replace('n', "").split(".")[0]);
         })
+        let missingmaps = [];
         arrayOfDownloaded.forEach((dld, ind) => {
             if(existsNow.indexOf(String(dld)) == -1) {
-                donwloadBeatmapset(Number(dld), "Restoring", `#${ind+1}`);
+                missingmaps.push(Number(dld))
             }
         })
+        if(existsNow.indexOf(String(missingmaps[listrestor])) == -1 && listrestor < missingmaps.length) {
+            donwloadBeatmapset(Number(missingmaps[listrestor]), "Restoring", `#${listrestor+1}`);
+        }
+        // arrayOfDownloaded.forEach((dld, ind) => {
+        //     if(existsNow.indexOf(String(dld)) == -1) {
+        //         donwloadBeatmapset(Number(dld), "Restoring", `#${ind+1}`);
+        //     }
+        // })
     } else {
+        listrestor = 0;
         document.getElementById("tooManyMapsets").classList.add('shown-modal');
     }
+}
+
+function sleep(ms) {
+    var start = new Date().getTime()
+    while ((new Date().getTime() - start) < ms) { }
+    return 1
 }

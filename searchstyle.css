@@ -1112,6 +1112,7 @@ h5 {
 .checkbox-label {
     display: inline-block;
     margin-bottom: 5px;
+    transform: translateY(-5px);
 }
 
 .cb-circle {
@@ -1138,6 +1139,10 @@ h5 {
     height: 40%;
     left: 20%;
     top: -50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     background-color: black;
     opacity: 0;
     transform: scale(1.3);
