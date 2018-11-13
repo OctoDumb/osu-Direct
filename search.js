@@ -67,11 +67,12 @@ let cancel = 0;
 let userid = 0;
 
 var arrayOfDownloaded = [];
-rawDirs.forEach(dirr => {
-    if(dirr.indexOf(".osz") == -1) arrayOfDownloaded.push(Number(dirr.split("n").join("").split(" ")[0]))
-    else arrayOfDownloaded.push(Number(dirr.split(" ")[0]));
+if(!fs.existsSync("./downloaded.json")) rawDirs.forEach(dirr => {
+    if(dirr.indexOf(".osz") != -1) arrayOfDownloaded.push(Number(dirr.split(".")[0].split("n")[0]))
+    else if(dirr != "Failed") arrayOfDownloaded.push(Number(dirr.split(" ")[0]));
 })
 
+fs.writeFileSync("./downloaded.json", JSON.stringify(arrayOfDownloaded));
 
 request.post({
     url: 'https://osu.ppy.sh/forum/ucp.php?mode=login',
@@ -92,9 +93,13 @@ request.post({
     }
     authed = true;
     fs.writeFileSync("./test.html", body)
+    if(!body.split("localUserCheck = \"")[1]) {
+        createNotification('error', "Couldn't authorize");
+        document.getElementById("maplist").innerHTML = "<h2>Authorization failed</h2>";
+    }
     localUserCheck = body.split("localUserCheck = \"")[1].split("\";")[0];
     userid = body.split("localUserId = ")[1].split(";")[0];
-    document.getElementById("maplist").innerHTML = "<h2>Authorized</h2>"
+    document.getElementById("maplist").innerHTML = "<h2>Authorized</h2>";
     searchBeatmapsets();
 })
 
@@ -228,7 +233,7 @@ function searchBeatmapsets() {
             }
             let stats = statsStar && statsAr && statsOd && statsCs && statsHp && statsBpm;
             let downloadedIgnored = arrayOfDownloaded.indexOf(beatmapset.id) == -1;
-            if(document.getElementById('search-downloaded').checked) downloadedIgnored = true;
+            if(settings.showDownloaded) downloadedIgnored = true;
             if(downloadedIgnored && ignored.indexOf(beatmapset.id) == -1 && stats) {
                 let difficulties = "";
                 if(diffs.length > 11) {
@@ -586,7 +591,7 @@ function donwloadBeatmapset(id, title, artist) {
             alreadyDownloading = true;
         }
     })
-    if(document.getElementById('search-novideo').checked) id = id + "n";
+    if(settings.noVideo) id += "n";
     if(alreadyDownloading) {
         var scrolled = window.pageYOffset || document.documentElement.scrollTop;
         setTimeout(function() {
@@ -627,7 +632,8 @@ function donwloadBeatmapset(id, title, artist) {
         createNotification('error', `Failed downloading ${title} - ${artist}`);
         return;
     }).pipe(stream).on('finish', () => {
-        arrayOfDownloaded.push(id);
+        if(arrayOfDownloaded.indexOf(Number(id.split("n")[0])) == -1) arrayOfDownloaded.push(Number(id.split("n")[0]));
+        fs.writeFileSync("./downloaded.json", JSON.stringify(arrayOfDownloaded));
         downloads.forEach((dl,ind) => {
             if(dl == id) downloads.splice(ind, 1);
         })
@@ -840,7 +846,38 @@ function openSettings() {
 
 function signout() {
     fs.unlinkSync("./loginData.json");
+    let mainWindow = new remote.BrowserWindow({width: 400, height: 300, frame: false, icon: __dirname + "/icon.ico"});
+    let thisWindow = remote.getCurrentWindow();
+    mainWindow.setPosition(thisWindow.getPosition()[0]+300, thisWindow.getPosition()[1]+200);
+    mainWindow.loadFile("login.html");
     window.close();
+}
+
+function loadCB() {
+    let checkboxes = document.getElementsByClassName("cb-circle");
+    console.log(checkboxes);
+    for(let i = 0; i < checkboxes.length; i++) {
+        let cb = checkboxes[i];
+        let param = cb.getAttribute("param");
+        cb.parentNode.addEventListener('click', () => {
+            if(cb.classList.contains("cb-on")) {
+                cb.classList.remove("cb-on");
+                cb.parentNode.style.background = "rgb(230,0,0)";
+            } else {
+                cb.classList.add("cb-on");
+                cb.parentNode.style.background = "rgb(0,230,0)";
+            }
+            editSettings(param, !settings[param]);
+        })
+        cb.parentNode.setAttribute('onclick', `changeParameter('${param}', !settings['${param}'])`);
+        cb.onclick = `changeParameter('${param}', !settings['${param}'])`;
+        if(settings[param]) {
+            cb.parentNode.style.background = "rgb(0,230,0)";
+            cb.classList.add("cb-on");
+        } else {
+            cb.parentNode.style.background = "rgb(230,0,0)";
+        }
+    }
 }
 
 function openGeneralOptions() {
@@ -848,7 +885,10 @@ function openGeneralOptions() {
     document.getElementById('backup-op').className = "option";
     document.getElementById('myacc-op').className = "option";
     document.getElementById('change-op').className = "option";
-    document.getElementById('settings-main').innerHTML = '<h1>General</h1>';
+    document.getElementById('settings-main').innerHTML = fs.readFileSync("./settings/generalSettings.html").toString();
+    // document.getElementById("search-novideo").checked = settings.noVideo;
+    // document.getElementById("search-downloaded").checked = settings.showDownloaded;
+    loadCB();
 }
 
 function openMyaccOptions() {
@@ -856,7 +896,7 @@ function openMyaccOptions() {
     document.getElementById('backup-op').className = "option";
     document.getElementById('general-op').className = "option";
     document.getElementById('change-op').className = "option";
-    document.getElementById('settings-main').innerHTML = '<h1>My Account</h1> <div id="my-account-info-wrapper"> <div id="my-account-info"> <div id="profile-pic"> </div> <div id="account-fields"> <div class="account-field"> <h1 class="label">USERNAME</h1> <input class="input" id="username" type="text" value="Bloop"> </div> <div class="account-field"> <h1 class="label">CURRENT PASSWORD</h1> <input class="input" id="password" type="password" value="bloopiedoopiedoo"> </div> <center><input onclick="signout()" style="transform: translateX(-20px); margin: 10px; margin-bottom: 5px;" type="submit" class="btn btn-danger" value="Sign out"></center> </div> </div> </div>';
+    document.getElementById('settings-main').innerHTML = fs.readFileSync("./settings/accountSettings.html").toString();
     document.getElementById('username').value = user.username;
     document.getElementById('password').value = user.password;
     document.getElementById('profile-pic').style.background = 'url("https://a.ppy.sh/' + userid + '")';
@@ -867,7 +907,7 @@ function openbackupOptions() {
     document.getElementById('myacc-op').className = "option";
     document.getElementById('general-op').className = "option";
     document.getElementById('change-op').className = "option";
-    document.getElementById('settings-main').innerHTML = '<h1>Backup</h1>';
+    document.getElementById('settings-main').innerHTML = fs.readFileSync("./settings/backupSettings.html");
 }
 
 function openChangelogOptions() {
@@ -875,5 +915,21 @@ function openChangelogOptions() {
     document.getElementById('myacc-op').className = "option";
     document.getElementById('general-op').className = "option";
     document.getElementById('backup-op').className = "option";
-    document.getElementById('settings-main').innerHTML = '<h1>Changelog</h1>';
+    document.getElementById('settings-main').innerHTML = fs.readFileSync("./settings/changelog.html");
+}
+
+function restoreBeatmaps(force) {
+    if(force) {
+        let existsNow = [];
+        fs.readdirSync(dlPath).forEach(dpath => {
+            existsNow.push(dpath.split(" ")[0].split(".")[0]);
+        })
+        arrayOfDownloaded.forEach((dld, ind) => {
+            if(existsNow.indexOf(String(dld)) == -1) {
+                donwloadBeatmapset(Number(dld), "Restoring", `#${ind+1}`);
+            }
+        })
+    } else {
+        document.getElementById("tooManyMapsets").classList.add('shown-modal');
+    }
 }

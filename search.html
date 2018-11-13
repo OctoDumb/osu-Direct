@@ -126,14 +126,6 @@
                     <input type="checkbox" class="form-check-input" id="search-include">
                     <label class="form-check-label" for="search-include">Include converted beatmaps</label>
                 </div>
-                <div class="form-group form-check">
-                    <input type="checkbox" class="form-check-input" id="search-novideo" onclick="editSettings('noVideo', !settings.noVideo)">
-                    <label class="form-check-label" for="search-novideo">No video</label>
-                </div>
-                <div class="form-group form-check">
-                    <input type="checkbox" class="form-check-input" id="search-downloaded" onclick="editSettings('showDownloaded', !settings.showDownloaded)">
-                    <label class="form-check-label" for="search-downloaded">Show downloaded maps</label>
-                </div>
             </div>
             <div id="maplist">
                 <h2>Authorizing...</h2>
@@ -187,9 +179,5 @@
         <div id="volume-overlay"><div id="volume">Volume</div><div class="volumebg"></div></div>
         <section id="loader-proc" class="loaders"><h5>To cancel the search press ESC!</h5><span class="loader loader-quart"></span></section>
         <h3 id="footer">Created by <a onclick="openSite('https://vk.com/octopussx')">OctopuSS</a> & <a onclick ="openSite('https://4fun.glitch.me')">4FuN</a></h3>
-        <script type="text/javascript">
-            document.getElementById("search-novideo").checked = settings.noVideo;
-            document.getElementById("search-downloaded").checked = settings.showDownloaded;
-        </script>
     </body>
 </html>
