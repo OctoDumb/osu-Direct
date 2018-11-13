@@ -1,0 +1,13 @@
+<h1>
+	Backup settings
+</h1>
+<br>
+<button class="btn btn-info" onclick="restoreBeatmaps(false)">
+	Restore beatmaps
+</button>
+<small>In case you've deleted 'em all or something...</small>
+
+<div id="tooManyMapsets" class="warning-modal">
+	You have more than 50 mapsets. Restoring them is gonna take a BIG WHILE! Are you sure?<br>
+	<button class="btn btn-info" onclick="restoreBeatmaps(true); document.getElementById('tooManyMapsets').classList.remove('shown-modal')">RESTORE THEM!</button>
+</div>
