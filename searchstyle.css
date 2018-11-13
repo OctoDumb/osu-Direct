@@ -1132,17 +1132,20 @@ h5 {
     left: 22px;
 }
 
-.warning-modal {
-    padding: 10px;
-    position: fixed;
-    width: 60%;
-    height: 40%;
-    left: 20%;
-    top: -50%;
+#centerjust {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+}
+
+.warning-modal {
+    padding: 10px 30px;
+    position: fixed;
+    width: 65%;
+    left: 20%;
+    top: -50%;
+
     background-color: black;
     opacity: 0;
     transform: scale(1.3);
@@ -1153,7 +1156,7 @@ h5 {
 }
 
 .shown-modal {
-    top: 5%;
+    top: 20%;
     opacity: 0.9;
     transform: scale(1);
 }

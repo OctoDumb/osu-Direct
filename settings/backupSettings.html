@@ -7,7 +7,10 @@
 </button>
 <small>In case you've deleted 'em all or something...</small>
 
-<div id="tooManyMapsets" class="warning-modal">
-	You have more than 50 mapsets. Restoring them is gonna take a BIG WHILE! Are you sure?<br>
-	<button class="btn btn-info" onclick="restoreBeatmaps(true); document.getElementById('tooManyMapsets').classList.remove('shown-modal')">RESTORE THEM!</button>
+<div id="centerjust">
+	<div id="tooManyMapsets" class="warning-modal">
+		You have more than 50 mapsets. Restoring them is gonna take a BIG WHILE! Are you sure?<br>
+		<button style="margin: 10px 5px; display: inline-block;" class="btn btn-info" onclick="restoreBeatmaps(true); document.getElementById('tooManyMapsets').classList.remove('shown-modal')">RESTORE THEM!</button>
+		<button style="margin: 10px 5px; display: inline-block;" class="btn btn-danger" onclick="document.getElementById('tooManyMapsets').classList.remove('shown-modal')">Cancel</button>
+	</div>
 </div>
