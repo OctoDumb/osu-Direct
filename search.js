@@ -414,7 +414,7 @@ function loadMore() {
             }
             let stats = statsStar && statsAr && statsOd && statsCs && statsHp && statsBpm;
             let downloadedIgnored = arrayOfDownloaded.indexOf(beatmapset.id) == -1;
-            if(document.getElementById('search-downloaded').checked) downloadedIgnored = true;
+            if(settings.showDownloaded) downloadedIgnored = true;
             if(downloadedIgnored && ignored.indexOf(beatmapset.id) == -1 && stats) {
                 let difficulties = "";
                 if(diffs.length > 11) {
