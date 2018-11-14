@@ -71,11 +71,9 @@ let listrestor = 0;
 var arrayOfDownloaded = [];
 if(!fs.existsSync("./downloaded.json")) {
     rawDirs.forEach(dirr => {
-        if(dirr != NaN) {
-            if(dirr.indexOf(".osz") != -1) arrayOfDownloaded.push(Number(dirr.split(".")[0].split("n")[0]))
-            else if(dirr.split(" ")[0].indexOf('n') > -1) arrayOfDownloaded.push(Number(dirr.split(" ")[0].replace('n', "")));
-            else if(dirr != "Failed") arrayOfDownloaded.push(Number(dirr.split(" ")[0]));
-        }
+        if(dirr.indexOf(".osz") != -1) arrayOfDownloaded.push(parseInt(dirr.split(".")[0]))
+        else if(dirr.split(" ")[0].indexOf('n') > -1) arrayOfDownloaded.push(parseInt(dirr.split(" ")[0]));
+        else if(dirr != "Failed") arrayOfDownloaded.push(parseInt(dirr.split(" ")[0]));
     })
     fs.writeFileSync("./downloaded.json", JSON.stringify(arrayOfDownloaded));
 } else {
@@ -930,6 +928,9 @@ function openChangelogOptions() {
     document.getElementById('settings-main').innerHTML = fs.readFileSync("./settings/changelog.html");
 }
 
+let restorstarted = 0;
+let missingmapsnum = 0;
+
 function restoreBeatmaps(force) {
     if(force) {
         let existsNow = [];
@@ -942,8 +943,24 @@ function restoreBeatmaps(force) {
                 missingmaps.push(Number(dld))
             }
         })
-        if(existsNow.indexOf(String(missingmaps[listrestor])) == -1 && listrestor < missingmaps.length) {
-            donwloadBeatmapset(Number(missingmaps[listrestor]), "Restoring", `#${listrestor+1}`);
+        console.log(missingmaps);
+        if(existsNow.indexOf(String(missingmaps[0])) == -1 && missingmaps.length != 0) {
+            donwloadBeatmapset(Number(missingmaps[0]), "Restoring", `#${listrestor+1}`);
+            console.log(100/(missingmapsnum/listrestor)/1.42)
+            document.getElementById("restore").style.width = 100/(missingmapsnum/listrestor)/1.42 + "vw";
+            if(restorstarted == 0) {
+                document.getElementsByClassName("restorebg")[0].style.bottom = "10px";
+                document.getElementById("restore").style.bottom = "10px";
+                missingmapsnum = missingmaps.length;
+                restorstarted++;
+            }
+        } else {
+            document.getElementById("restore").style.width = "100vw";
+            setTimeout(function () {
+                document.getElementsByClassName("restorebg")[0].style.bottom = "-10vw";
+                document.getElementById("restore").style.bottom = "-10vw";
+                document.getElementById("restore").style.width = "0vw";
+            }, 1000)
         }
         // arrayOfDownloaded.forEach((dld, ind) => {
         //     if(existsNow.indexOf(String(dld)) == -1) {

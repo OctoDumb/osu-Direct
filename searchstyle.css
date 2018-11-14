@@ -693,147 +693,6 @@ border-top-color: white;
 animation: spin 1s linear infinite;
 }
 
-/*	$Loader Double circle
-    ========================================================================== */
-.loader-double {
-border-radius: 50px;
-border: 6px solid transparent;
-border-top-color: red;
-border-bottom-color: red;
--webkit-animation: spin 1.5s linear infinite;
-animation: spin 1.5s linear infinite;
-}
-.loader-double:before, .loader-double:after {
-content: "";
-position: absolute;
-top: 5px;
-right: 5px;
-bottom: 5px;
-left: 5px;
-border-radius: 50px;
-border: 6px solid transparent;
-border-top-color: red;
-border-bottom-color: red;
-opacity: 1;
-filter: alpha(opacity=100);
--webkit-animation: spinreverse 2s linear infinite;
-animation: spinreverse 2s linear infinite;
-}
-.loader-double:before {
-top: 13px;
-left: 13px;
-bottom: 13px;
-right: 13px;
--webkit-animation: spinreverse 3s linear infinite;
-animation: spinreverse 3s linear infinite;
-}
-
-/*	$Loader Multiple circle
-    ========================================================================== */
-.loader-circles {
-border-radius: 50px;
-border: 3px solid transparent;
-border-top-color: red;
--webkit-animation: spin 1s linear infinite;
-animation: spin 1s linear infinite;
-}
-.loader-circles:before, .loader-circles:after {
-content: "";
-position: absolute;
-top: 5px;
-right: 5px;
-bottom: 5px;
-left: 5px;
-border-radius: 50px;
-border: 3px solid transparent;
-border-top-color: red;
-opacity: 1;
-filter: alpha(opacity=100);
--webkit-animation: spinreverse 5s linear infinite;
-animation: spinreverse 5s linear infinite;
-}
-.loader-circles:before {
-top: 12px;
-left: 12px;
-bottom: 12px;
-right: 12px;
--webkit-animation: spinreverse 10s linear infinite;
-animation: spinreverse 10s linear infinite;
-}
-
-/*	$Loader Bars
-    ========================================================================== */
-.loader-bars:before,
-.loader-bars:after,
-.loader-bars span {
-content: "";
-display: block;
-position: absolute;
-left: 0;
-top: 0;
-width: 10px;
-height: 30px;
-background-color: #fff;
--webkit-animation: grow 1.5s linear infinite;
-animation: grow 1.5s linear infinite;
-}
-
-.loader-bars:after {
-left: 15px;
--webkit-animation: grow 1.5s linear -0.5s infinite;
-animation: grow 1.5s linear -0.5s infinite;
-}
-
-.loader-bars span {
-left: 30px;
--webkit-animation: grow 1.5s linear -1s infinite;
-animation: grow 1.5s linear -1s infinite;
-}
-
-@-webkit-keyframes grow {
-0% {
-    -webkit-transform: scaleY(0);
-    transform: scaleY(0);
-    opacity: 0;
-}
-50% {
-    -webkit-transform: scaleY(1);
-    transform: scaleY(1);
-    opacity: 1;
-}
-100% {
-    -webkit-transform: scaleY(0);
-    transform: scaleY(0);
-    opacity: 0;
-}
-}
-@keyframes grow {
-0% {
-    -webkit-transform: scaleY(0);
-    transform: scaleY(0);
-    opacity: 0;
-}
-50% {
-    -webkit-transform: scaleY(1);
-    transform: scaleY(1);
-    opacity: 1;
-}
-100% {
-    -webkit-transform: scaleY(0);
-    transform: scaleY(0);
-    opacity: 0;
-}
-}
-@-webkit-keyframes spin {
-0% {
-    -webkit-transform: rotate(0deg);
-    tranform: rotate(0deg);
-}
-100% {
-    -webkit-transform: rotate(360deg);
-    tranform: rotate(360deg);
-}
-}
 @keyframes spin {
 0% {
     -webkit-transform: rotate(0deg);
@@ -842,26 +701,6 @@ animation: grow 1.5s linear -1s infinite;
 100% {
     -webkit-transform: rotate(360deg);
     tranform: rotate(360deg);
-}
-}
-@-webkit-keyframes spinreverse {
-0% {
-    -webkit-transform: rotate(0deg);
-    tranform: rotate(0deg);
-}
-100% {
-    -webkit-transform: rotate(-360deg);
-    tranform: rotate(-360deg);
-}
-}
-@keyframes spinreverse {
-0% {
-    -webkit-transform: rotate(0deg);
-    tranform: rotate(0deg);
-}
-100% {
-    -webkit-transform: rotate(-360deg);
-    tranform: rotate(-360deg);
 }
 }
 
@@ -873,13 +712,62 @@ h5 {
     bottom: 0;
 }
 
+#restore-overlay {
+    position: fixed;
+    background: rgba(0, 0, 0, 0.6);
+    top: 0;
+    justify-content: center;
+    align-items: center;
+    z-index: 19;
+    display: flex;
+    color: white;
+    width: 100vw;
+}
+
+#restore-overlay h1 {
+    position: fixed;
+    color: rgba(0, 0, 0, 0.6);
+    bottom: 10px;
+    z-index: 11;
+}
+
+.restorebg {
+    width: 70vw;
+    height: 5vh;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50px;
+    position: fixed;
+    transition: 0.5s ease;
+    bottom: -10vw;
+    z-index: 9;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+#restore {
+    width: 0vw;
+    height: 5vh;
+    max-width: 70vw;
+    display: flex;
+    transition: 0.5s ease;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    font-size: 28px;
+    background: #28A745;
+    border-radius: 50px;
+    position: fixed;
+    text-shadow: 0px 0px 12px rgba(0, 0, 0, 1);
+    bottom: -10vw;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
 #volume-overlay {
     position: fixed;
     background: rgba(0, 0, 0, 0.6);
     top: 0;
     justify-content: center;
     align-items: center;
-    z-index: 889;
+    z-index: 20;
     display: flex;
     color: white;
     width: 100vw;
@@ -917,6 +805,8 @@ h5 {
     position: fixed;
     bottom: -10vw;
 }
+
+
 
 .label-click {
     cursor: pointer;
