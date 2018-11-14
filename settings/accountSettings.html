@@ -14,8 +14,13 @@
 				<h1 class="label">CURRENT PASSWORD</h1>
 				<input class="input" id="password" type="password" value="bloopiedoopiedoo">
 			</div>
+			<div class="account-field">
+				<h1 class="label">ACCESS TOKEN<a onclick="openSite('https://osu.ppy.sh/p/api')" style="margin-left: 3px; color: rgb(44, 92, 252);">(GET TOKEN)</a></h1>
+				<input class="input" id="token" type="text" value="Token">
+			</div>
 			<center>
-				<input onclick="signout()" style="transform: translateX(-20px); margin: 10px; margin-bottom: 5px;" type="submit" class="btn btn-danger" value="Sign out">
+				<input onclick="saveToken()" style="width: 90px; transform: translateX(-20px); margin: 10px; margin-bottom: 5px;" class="btn btn-success" value="Save">
+				<input onclick="signout()" style="width: 90px; transform: translateX(-20px); margin: 10px; margin-bottom: 5px;" class="btn btn-danger" value="Sign out">
 			</center>
 		</div>
 	</div>

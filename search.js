@@ -1,6 +1,9 @@
 const ipc = require('electron').ipcRenderer;
 const { remote } = require('electron')
 var querystring = require('querystring');
+let cheerio = require("cheerio");
+const ojsama = require("ojsama");
+let readline = require('readline');
 var request = require('request').defaults({
     jar: true,
     headers: {
@@ -11,6 +14,7 @@ var progress = require('request-progress');
 var fs = require('fs');
 let authed = false;
 let downloads = [];
+let loadedMapsets = [];
 var settings = {
 	showDownloaded: false,
 	noVideo: false
@@ -56,6 +60,15 @@ let dlPath = fs.readFileSync("./downloadDirectory.txt").toString().replace('\\',
 
 let rawDirs = fs.readdirSync(dlPath);
 
+if(fs.existsSync('./cached')) {
+    fs.readdirSync('./cached').forEach(file => {
+        fs.unlinkSync(`./cached/${file}`);
+    })
+    fs.rmdirSync('./cached')
+}
+
+fs.mkdirSync('./cached')
+
 let start = 0;
 
 let volume = 0.2;
@@ -79,6 +92,8 @@ if(!fs.existsSync("./downloaded.json")) {
 } else {
     arrayOfDownloaded = JSON.parse(fs.readFileSync("./downloaded.json"));
 }
+
+let friendlist = [];
 
 request.post({
     url: 'https://osu.ppy.sh/forum/ucp.php?mode=login',
@@ -107,8 +122,20 @@ request.post({
     userid = body.split("localUserId = ")[1].split(";")[0];
     document.getElementById("maplist").innerHTML = "<h2>Authorized</h2>";
     searchBeatmapsets();
+    request.get("https://osu.ppy.sh/forum/ucp.php?i=163", function(err, res, body) {
+        var $ = cheerio.load(body);
+        let nickname = [];
+        let friendid = $(".paddingboth").html().split('<div class="paddingboth">')[6].split("\t").join("").split("\n");
+        friendid.forEach(nick => {
+            if(nick.indexOf("profile_friend mutual") > -1) {
+                nickname.push(nick.replace('<span class="profile_friend mutual"><a href="/u/', "").split('"')[0]);
+            } else {nickname.push(nick.replace('<span class="profile_friend "><a href="/u/', "").split('"')[0])}
+        })
+        nickname.forEach(friend => {
+            if(friend != "" && friend != "No friends online" && friend != "Offline" && friend != "Online" && friend != "</div>") friendlist.push(friend);
+        })
+    })
 })
-
 
 function formatUpper(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -124,6 +151,27 @@ function sortDiffs(diffs) {
             else return 0;
         }
     });
+}
+
+function osuSort(diffs) {
+    diffs = sortDiffs(diffs);
+    let give = [];
+    diffs.forEach((diff, ind) => {
+        if(diff.mode_int == 0) {
+            give.push(diff);
+        }
+    })
+    return give;
+    // let del = [];
+    // diffs.forEach((diff, ind) => {
+    //     if(diff.mode_int != 0) del.push(ind);
+    // })
+    // if(diffs.length == del.length) return [];
+    // del.forEach(d => {
+    //     console.log(d);
+    //     diffs.splice(d, 1);        
+    // });
+    // return sortDiffs(diffs);
 }
 
 function createNotification(style, text) {
@@ -167,6 +215,7 @@ let csznak = ">=";
 let bpmznak = ">=";
 
 function searchBeatmapsets() {
+    loadedMapsets = [];
     cancel = 0;
     if(!authed) {
         createNotification('error', 'Wait until you are logged in!');
@@ -242,7 +291,7 @@ function searchBeatmapsets() {
             if(settings.showDownloaded) downloadedIgnored = true;
             if(downloadedIgnored && ignored.indexOf(beatmapset.id) == -1 && stats) {
                 let difficulties = "";
-                if(diffs.length > 11) {
+                if(diffs.length > 10) {
                     var nowmode = 0;
                     var count = 0;
                     diffs.forEach((diff, ind) => {
@@ -301,7 +350,7 @@ function searchBeatmapsets() {
                     favor = 'style="transform: scale(0.95); color: rgb(209, 0, 108)" onclick="unfavouriteBeatmapset('+ beatmapset.id +');" class="fas favor-' + beatmapset.id + ' fa-heart"';
                 }
                 maplist+=`<div class="map" id="mapset-${beatmapset.id}">
-                    <div class="map-header">
+                    <div class="map-header" onclick="openbrowser(${loadedMapsets.length})">
                         <img src="${beatmapset.covers.cover}" alt="">
                     </div>
                     <div class="status">${formatUpper(beatmapset.status)}</div>
@@ -316,6 +365,7 @@ function searchBeatmapsets() {
                     <a title="Ignore beatmap" class="ignore"><i onclick="ignoreMapset(${beatmapset.id}, \`${beatmapset.title}\`, \`${beatmapset.artist}\`)" class="fas fa-times"></i></a>
                     <div id="alldiff">${difficulties}</div>
                 </div>`;
+                loadedMapsets.push(beatmapset);
             }
             ind++;
         })
@@ -415,7 +465,7 @@ function loadMore() {
             if(settings.showDownloaded) downloadedIgnored = true;
             if(downloadedIgnored && ignored.indexOf(beatmapset.id) == -1 && stats) {
                 let difficulties = "";
-                if(diffs.length > 11) {
+                if(diffs.length > 10) {
                     var nowmode = 0;
                     var count = 0;
                     diffs.forEach((diff, ind) => {
@@ -474,7 +524,7 @@ function loadMore() {
                     favor = 'style="transform: scale(0.95); color: rgb(209, 0, 108)" onclick="unfavouriteBeatmapset('+ beatmapset.id +');" class="fas favor-' + beatmapset.id + ' fa-heart"';
                 }
                 maplist+=`<div class="map" id="mapset-${beatmapset.id}">
-                    <div class="map-header">
+                    <div class="map-header" onclick="openbrowser(${loadedMapsets.length})">
                         <img src="${beatmapset.covers.cover}" alt="">
                     </div>
                     <div class="status">${formatUpper(beatmapset.status)}</div>
@@ -489,6 +539,7 @@ function loadMore() {
                     <a title="Ignore beatmap" class="ignore"><i onclick="ignoreMapset(${beatmapset.id}, \`${beatmapset.title}\`, \`${beatmapset.artist}\`)" class="fas fa-times"></i></a>
                     <div id="alldiff">${difficulties}</div>
                 </div>`;
+                loadedMapsets.push(beatmapset);
             }
             ind++;
         })
@@ -909,6 +960,7 @@ function openMyaccOptions() {
     document.getElementById('settings-main').innerHTML = fs.readFileSync("./settings/accountSettings.html").toString();
     document.getElementById('username').value = user.username;
     document.getElementById('password').value = user.password;
+    document.getElementById('token').value = user.token;
     document.getElementById('profile-pic').style.background = 'url("https://a.ppy.sh/' + userid + '")';
 }
 
@@ -977,4 +1029,293 @@ function sleep(ms) {
     var start = new Date().getTime()
     while ((new Date().getTime() - start) < ms) { }
     return 1
+}
+
+let modeIcons = {
+    0: '<i class="fal fa-extra-mode-osu"></i>',
+    1: '<i class="fal fa-extra-mode-taiko"></i>',
+    2: '<i class="fal fa-extra-mode-fruits"></i>',
+    3: '<i class="fal fa-extra-mode-mania"></i>'
+}
+
+let diffselected = 0;
+
+const eemods = {
+    1:      'NF',
+    2:      'EZ',
+    4:      'Touch',
+    8:      'HD',
+    16:     'HR',
+    32:     'SD',
+    64:     'DT',
+    128:    'RX',
+    256:    'HT',
+    576:    'NC',
+    1024:   'FL',
+    2048:   'AT',
+    4096:   'SO',
+    8192:   'AP',
+    16416:  'PF'
+}
+
+function parseMods(m) {
+    const enabled = [];
+    
+    const values = Object.keys(eemods).map(a => Number(a));
+    for (let i = values.length - 1; i >= 0; i--) {
+        if (m >= values[i]) {
+            m -= values[i];
+            enabled.push(eemods[values[i]]);
+        }
+        if (m == 0)
+            break;
+    }
+    let modsText = "";
+    enabled.reverse().forEach((mod, ind) => {
+        if (ind == 0) {
+            modsText += mod;
+        } else {
+            modsText += (mod);
+        }
+    });
+    return modsText;
+}
+
+function openbrowser(ind) {
+    let mapset = loadedMapsets[ind];
+    let diffs = osuSort(mapset.beatmaps);
+    document.getElementsByClassName('map-all-diffs')[0].innerHTML = "";
+    request.get(`https://assets.ppy.sh/beatmaps/${mapset.id}/covers/cover.jpg`, function(err, res, body) {
+        if(body.indexOf('404 Not Found') > -1) {
+            document.getElementById('map-bg').src = `default-bg.png`;
+        } else {document.getElementById('map-bg').src = `https://assets.ppy.sh/beatmaps/${mapset.id}/covers/cover.jpg`;}
+    })
+    document.getElementById('map-title').innerHTML = `${mapset.artist} - ${mapset.title}`;
+    document.getElementsByClassName('bpm')[0].innerHTML = `BPM: ${mapset.bpm.toPrecision(3)}`;
+    let mapLM = Math.floor(mapset.beatmaps[0].total_length/60);
+    let mapLength = String(mapLM) + (String(mapset.beatmaps[0].total_length - mapLM*60).length > 1 ? `:${mapset.beatmaps[0].total_length - mapLM*60}` : `:0${mapset.beatmaps[0].total_length - mapLM*60}`);
+    document.getElementsByClassName('length')[0].innerHTML = `<i style="margin-right: 5px;" class="fas fa-clock"></i>${mapLength}`;
+    if(diffs.length == 0) {
+        document.getElementsByClassName('pp-counter')[0].style.display = "none";
+        document.getElementsByClassName('top-plays')[0].style.height = "400px";
+        document.getElementsByClassName('justcenter')[0].style.height = "360px";
+    } else {
+        document.getElementsByClassName('pp-counter')[0].style.display = "flex";
+        document.getElementsByClassName('top-plays')[0].style.height = "340px";
+        document.getElementsByClassName('justcenter')[0].style.height = "300px";
+    }
+    diffs.forEach(function(diff,i) {
+        if(i == diffs.length-1) {
+            document.getElementsByClassName('map-all-diffs')[0].innerHTML += `<div onclick="changeDiff(${i},${mapset.beatmaps[i].difficulty_rating.toPrecision(3)}, ${mapset.beatmaps[i].ar}, ${mapset.beatmaps[i].cs}, ${mapset.beatmaps[i].accuracy}, ${mapset.beatmaps[i].drain}, ${mapset.beatmaps[i].id})" class="map-diff diff-selected">${modeIcons[diff.mode_int]} ${diff.version}</div>`;
+            diffselected = i;
+        } else {
+            document.getElementsByClassName('map-all-diffs')[0].innerHTML += `<div onclick="changeDiff(${i},${mapset.beatmaps[i].difficulty_rating.toPrecision(3)}, ${mapset.beatmaps[i].ar}, ${mapset.beatmaps[i].cs}, ${mapset.beatmaps[i].accuracy}, ${mapset.beatmaps[i].drain}, ${mapset.beatmaps[i].id})" class="map-diff">${modeIcons[diff.mode_int]} ${diff.version}</div>`;
+        }
+    })
+    if(!user.token) {
+        document.getElementById("topplays").innerHTML = "No API key provided. Check settings";
+    } else if(!diffs[0]) {
+        document.getElementById("topplays").innerHTML = "Only Standard is supported."; 
+    } else {
+        request.get(`https://osu.ppy.sh/api/get_scores?${querystring.stringify({k: user.token, b: diffs[diffselected].id, limit: 50})}`, function(err, res, body) {
+            body = JSON.parse(body);
+            if(body.error) {
+                document.getElementById("topplays").innerHTML = "Invalid API key.";
+            } else {
+                let table = "";
+                body.forEach((score, ind) => {
+                    console.log(score.enabled_mods)
+                    let object = {
+                        300: score.count300,
+                        100: score.count100,
+                        50: score.count50,
+                        miss: score.countmiss
+                    }
+                    let acc = Math.round((parseInt(object["300"]) * 6 + parseInt(object["100"]) * 2 + parseInt(object["50"])) / (parseInt(object["300"]) * 6 + parseInt(object["100"]) * 6 + parseInt(object["50"]) * 6 + parseInt(object.miss*6)) * 10000) / 100;
+                    table+=`<tr>
+                        <th scope="row">#${ind+1}</th>
+                        <td>${score.rank}</td>
+                        <td>${score.score}</td>
+                        <td>${acc}%</td>
+                        <td>${score.username}</td>
+                        <td>${score.maxcombo}x</td>
+                        <td>${object['300']}/${object['100']}/${object['50']}/${object.miss}</td>
+                        <td>${Math.round(Number(score.pp))}</td>
+                        <td>${parseMods(parseInt(score.enabled_mods))}</td>
+                    </tr>`
+                })
+                document.getElementById("topplays").innerHTML = table;
+            }                                                
+        })
+    }
+    document.getElementsByClassName('star')[0].innerHTML = `<i style="margin-right: 5px;" class="fas fa-star"></i> ${mapset.beatmaps[diffselected].difficulty_rating.toPrecision(3)}`;
+    document.getElementsByClassName('ar')[0].innerHTML = `AR: ${mapset.beatmaps[diffselected].ar}`;
+    document.getElementsByClassName('cs')[0].innerHTML = `CS: ${mapset.beatmaps[diffselected].cs}`;
+    document.getElementsByClassName('od')[0].innerHTML = `OD: ${mapset.beatmaps[diffselected].accuracy}`;
+    document.getElementsByClassName('hp')[0].innerHTML = `HP: ${mapset.beatmaps[diffselected].drain}`;
+    updatePP(mapset.beatmaps[diffselected].id);
+    document.getElementById('browser').style.display = "flex";
+    setTimeout(function () {
+        document.getElementById('browser-window').style.opacity = "1";
+        document.getElementById('browser-window').style.transform = "scale(1)";
+    }, 100)
+    console.log(mapset);
+}
+
+function changeDiff(diffind, star, ar, cs, od, hp, id) {
+    document.getElementsByClassName('map-diff')[diffselected].className = "map-diff";
+    diffselected = diffind;
+    document.getElementsByClassName('map-diff')[diffind].className = "map-diff diff-selected";
+    document.getElementsByClassName('star')[0].innerHTML = `<i style="margin-right: 5px;" class="fas fa-star"></i> ${star}`;
+    document.getElementsByClassName('ar')[0].innerHTML = `AR: ${ar}`;
+    document.getElementsByClassName('cs')[0].innerHTML = `CS: ${cs}`;
+    document.getElementsByClassName('od')[0].innerHTML = `OD: ${od}`;
+    document.getElementsByClassName('hp')[0].innerHTML = `HP: ${hp}`;
+    if(!user.token) {
+        document.getElementById("topplays").innerHTML = "No API key provided. Check settings";
+    } else {
+        request.get(`https://osu.ppy.sh/api/get_scores?${querystring.stringify({k: user.token, b: id, limit: 50})}`, function(err, res, body) {
+            body = JSON.parse(body);
+            if(body.error) {
+                document.getElementById("topplays").innerHTML = "Invalid API key.";
+            } else {
+                let table = "";
+                body.forEach((score, ind) => {
+                    console.log(score.enabled_mods)
+                    let object = {
+                        300: score.count300,
+                        100: score.count100,
+                        50: score.count50,
+                        miss: score.countmiss
+                    }
+                    let acc = Math.round((parseInt(object["300"]) * 6 + parseInt(object["100"]) * 2 + parseInt(object["50"])) / (parseInt(object["300"]) * 6 + parseInt(object["100"]) * 6 + parseInt(object["50"]) * 6 + parseInt(object.miss*6)) * 10000) / 100;
+                    table+=`<tr>
+                        <th scope="row">#${ind+1}</th>
+                        <td>${score.rank}</td>
+                        <td>${score.score}</td>
+                        <td>${acc}%</td>
+                        <td>${score.username}</td>
+                        <td>${score.maxcombo}x</td>
+                        <td>${object['300']}/${object['100']}/${object['50']}/${object.miss}</td>
+                        <td>${Math.round(Number(score.pp))}</td>
+                        <td>${parseMods(parseInt(score.enabled_mods))}</td>
+                    </tr>`
+                })
+                document.getElementById("topplays").innerHTML = table;
+            }                                                
+        })
+    }
+    updatePP(id);
+}
+
+function closebrowser() {
+    document.getElementById('browser-window').style.opacity = "0";
+    document.getElementById('browser-window').style.transform = "scale(1.1)";
+    setTimeout(function () {
+        document.getElementById('browser').style.display = "none";            
+    }, 500)
+}
+
+let hr = 0;
+let hd = 0;
+let fl = 0;
+let dt = 0;
+
+let ppcalcend = 0;
+
+let lastbeatmaps = "";
+
+function updatePP(beatmap) {
+    let mods = 0;
+    ppcalcend++;
+    lastbeatmaps = beatmap;
+    if(hr == 1) mods += 16;
+    if(hd == 1) mods += 8;
+    if(fl == 1) mods += 1024;
+    if(dt == 1) mods += 64;
+    if(fs.existsSync(`./cached/${beatmap}.osu`)) {
+        var parser = new ojsama.parser();
+        readline.createInterface({
+            input: fs.createReadStream(`./cached/${beatmap}.osu`)
+        }).on("line", parser.feed_line.bind(parser))
+        .on("close", function() {
+            var map = parser.map;
+            var stars = new ojsama.diff().calc({map: map, mods: mods});
+            let mapstats = new ojsama.std_beatmap_stats({ar: map.ar, od: map.od, cs: map.cs, hp: map.hp})
+            .with_mods(mods);
+            var pp = Math.round(ojsama.ppv2({
+                stars: stars,
+                combo: map.max_combo(),
+                nmiss: 0,
+                acc_percent: Number(document.getElementById('accuracy-pp').value.replace("%", ""))
+            }).total);
+            document.getElementById('pp-output').innerHTML = `= ${pp}pp`;
+            ppcalcend = 0;
+        })
+    } else {
+        request.get(`https://osu.ppy.sh/osu/${beatmap}`, function (err, res, body) {
+            fs.writeFileSync(`./cached/${beatmap}.osu`, body)
+            var parser = new ojsama.parser();
+            readline.createInterface({
+                input: fs.createReadStream(`./cached/${beatmap}.osu`)
+            }).on("line", parser.feed_line.bind(parser))
+            .on("close", function() {
+                var map = parser.map;
+                var stars = new ojsama.diff().calc({map: map, mods: mods});
+                let mapstats = new ojsama.std_beatmap_stats({ar: map.ar, od: map.od, cs: map.cs, hp: map.hp})
+                .with_mods(mods);
+                var pp = Math.round(ojsama.ppv2({
+                    stars: stars,
+                    combo: map.max_combo(),
+                    nmiss: 0,
+                    acc_percent: Number(document.getElementById('accuracy-pp').value.replace("%", ""))
+                }).total);
+                document.getElementById('pp-output').innerHTML = `= ${pp}pp`;
+                ppcalcend = 0;
+            })
+        })
+    }
+}
+
+function accchange() {
+    if(ppcalcend == 0) {
+        updatePP(lastbeatmaps);
+    }
+}
+
+function switchMod(mod) {
+    if(eval(`${mod} == 0`)) {
+        document.getElementsByClassName(mod)[0].classList.add('mode-selected');
+        eval(`${mod} = 1`)
+    } else {
+        document.getElementsByClassName(mod)[0].classList.remove('mode-selected');
+        eval(`${mod} = 0`)
+    }
+    updatePP(lastbeatmaps)
+}
+
+function saveToken() {
+    user = {
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value,
+        token: document.getElementById("token").value
+    }
+    fs.writeFileSync("./loginData.json", JSON.stringify(user));
+}
+
+function changeDLDir() {
+    var path = remote.dialog.showOpenDialog({title: 'Choose osu!/Songs directory', properties: ['openDirectory']});
+    fs.writeFileSync("downloadDirectory.txt", path);
+    dlPath = path.replace('\\', '/');
+}
+
+function saveDLs() {
+    var path = remote.dialog.showSaveDialog({title: "Save downloaded beatmaps list", filters: [{name: "JSON files", extensions: ['json']}]});
+    fs.writeFileSync(path, JSON.stringify(arrayOfDownloaded));
+}
+
+function loadDLs() {
+    var path = remote.dialog.showOpenDialog({title: 'Load beatmapsets list', filters: [{name: "JSON files", extensions: ['json']}, properties: ['openFile']]});
+    var bms = JSON.parse(fs.readFileSync(path).toString());
+    //
 }

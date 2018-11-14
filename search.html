@@ -11,7 +11,7 @@
         <script src="countUp.js"></script>
         <script src="search.js"></script>     
     </head>
-    <body style="background: rgb(209, 0, 108);" onload="settings">
+    <body style="background: rgb(209, 0, 108);">
         <div id="back"></div>
         <div id="titlebar"><h2>osu!Direct</h2></div>
         <audio id="preview">
@@ -169,8 +169,198 @@
                                 <h1 class="label">CURRENT PASSWORD</h1>
                                 <input class="input" id="password" type="password" value="bloopiedoopiedoo">
                             </div>
-                            <center><input onclick="signout()" style="transform: translateX(-20px); margin: 10px; margin-bottom: 5px;" type="submit" class="btn btn-danger" value="Sign out"></center>
+                            <div class="account-field">
+                                <h1 class="label">ACCESS TOKEN<a onclick="openSite('https://osu.ppy.sh/p/api')" style="margin-left: 3px; color: rgb(44, 92, 252);">(GET TOKEN)</a></h1>
+                                <input class="input" id="token" type="text" value="Token">
                             </div>
+                            <center>
+                                <input onclick="saveToken()" style="width: 90px; transform: translateX(-20px); margin: 10px; margin-bottom: 5px;" class="btn btn-success" value="Save">
+                                <input onclick="signout()" style="width: 90px; transform: translateX(-20px); margin: 10px; margin-bottom: 5px;" class="btn btn-danger" value="Sign out">
+                            </center>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="browser">
+            <div id="browser-window">
+                <i onclick="closebrowser()" class="fas map-close fa-times fa-lg"></i>
+                <div id="main">
+                    <h1 id="map-title">Artist - title</h1>
+                    <div class="main-back"></div>
+                    <div class="map-desc">
+                        <img src="default-bg.png" alt="" id="map-bg">
+                        <div class="map-all-diffs">
+
+                        </div>
+                        <div class="map-stats">
+                            <div class="ar left-stat">
+                                AR: 9
+                            </div>
+                            <div class="od left-stat">
+                                OD: 10
+                            </div>
+                            <div class="cs left-stat">
+                                CS: 10
+                            </div>
+                            <div class="hp left-stat">
+                                HP: 10
+                            </div>
+                            <div class="star right-stat">
+                                <i style="margin-right: 5px;" class="fas fa-star"></i>6.98
+                            </div>
+                            <div class="length right-stat">
+                                <i style="margin-right: 5px;" class="fas fa-clock"></i>2 min 45 sec
+                            </div>
+                            <div class="bpm right-stat">
+                                BPM: 192
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pp-counter">
+                        <h1>PP:</h1> 
+                        Accuracy: <input oninput="accchange()" id="accuracy-pp" type="number" min="0" max="100" value="100">
+                        <div onclick="switchMod('hd')" class="hd right-mode">
+                            HD
+                        </div>
+                        <div onclick="switchMod('hr')" class="hr right-mode">
+                            HR
+                        </div>
+                        <div onclick="switchMod('dt')" class="dt right-mode">
+                            DT
+                        </div>  
+                        <div onclick="switchMod('fl')" class="fl right-mode">
+                            FL
+                        </div>            
+                        <div id="pp-output">= 192pp</div>       
+                    </div>
+                    <div class="top-plays">
+                        <div class="select">
+                            <div class="top-all top top-selected">
+                                Global Ranking
+                            </div>
+                            <div class="top-friend top">
+                                Friend Ranking (BUY SUPPORTER TAG)
+                            </div>
+                        </div>
+                        <div class="justcenter">
+                            <table class="table table-striped">
+                                <thead class="thead-dark">
+                                    <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col">Rank</th>
+                                    <th scope="col">Score</th>
+                                    <th scope="col">Accuracy</th>
+                                    <th scope="col">Player</th>
+                                    <th scope="col">Max combo</th>
+                                    <th scope="col">Counts</th>
+                                    <th scope="col">PP</th>
+                                    <th scope="col">Mods</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="topplays">
+                                    <tr>
+                                        <th scope="row">#1</th>
+                                        <td>S</td>
+                                        <td>5 954 241</td>
+                                        <td>95.83%</td>
+                                        <td>EroFish</td>
+                                        <td>561x</td>
+                                        <td>375/25/0/0</td>
+                                        <td>175</td>
+                                        <td>HDHR</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">#2</th>
+                                        <td>S</td>
+                                        <td>5 954 241</td>
+                                        <td>95.83%</td>
+                                        <td>EroFish</td>
+                                        <td>561x</td>
+                                        <td>375/25/0/0</td>
+                                        <td>175</td>
+                                        <td>HDHR</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">#3</th>
+                                        <td>S</td>
+                                        <td>5 954 241</td>
+                                        <td>95.83%</td>
+                                        <td>EroFish</td>
+                                        <td>561x</td>
+                                        <td>375/25/0/0</td>
+                                        <td>175</td>
+                                        <td>HDHR</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">#4</th>
+                                        <td>S</td>
+                                        <td>5 954 241</td>
+                                        <td>95.83%</td>
+                                        <td>EroFish</td>
+                                        <td>561x</td>
+                                        <td>375/25/0/0</td>
+                                        <td>175</td>
+                                        <td>HDHR</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">#5</th>
+                                        <td>S</td>
+                                        <td>5 954 241</td>
+                                        <td>95.83%</td>
+                                        <td>EroFish</td>
+                                        <td>561x</td>
+                                        <td>375/25/0/0</td>
+                                        <td>175</td>
+                                        <td>HDHR</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">#5</th>
+                                        <td>S</td>
+                                        <td>5 954 241</td>
+                                        <td>95.83%</td>
+                                        <td>EroFish</td>
+                                        <td>561x</td>
+                                        <td>375/25/0/0</td>
+                                        <td>175</td>
+                                        <td>HDHR</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">#5</th>
+                                        <td>S</td>
+                                        <td>5 954 241</td>
+                                        <td>95.83%</td>
+                                        <td>EroFish</td>
+                                        <td>561x</td>
+                                        <td>375/25/0/0</td>
+                                        <td>175</td>
+                                        <td>HDHR</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">#5</th>
+                                        <td>S</td>
+                                        <td>5 954 241</td>
+                                        <td>95.83%</td>
+                                        <td>EroFish</td>
+                                        <td>561x</td>
+                                        <td>375/25/0/0</td>
+                                        <td>175</td>
+                                        <td>HDHR</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">#5</th>
+                                        <td>S</td>
+                                        <td>5 954 241</td>
+                                        <td>95.83%</td>
+                                        <td>EroFish</td>
+                                        <td>561x</td>
+                                        <td>375/25/0/0</td>
+                                        <td>175</td>
+                                        <td>HDHR</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

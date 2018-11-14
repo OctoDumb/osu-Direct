@@ -28,7 +28,10 @@
     "electron-packager": "^12.2.0"
   },
   "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "cloudscraper": "^1.5.0",
     "electron-drag": "^1.2.2",
+    "ojsama": "^1.0.19",
     "querystring": "^0.2.0",
     "request": "^2.88.0",
     "request-progress": "^3.0.0"
