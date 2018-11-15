@@ -1081,6 +1081,8 @@ function parseMods(m) {
     return modsText;
 }
 
+let bpmwithoutdt = 0;
+
 function openbrowser(ind) {
     let mapset = loadedMapsets[ind];
     let diffs = osuSort(mapset.beatmaps);
@@ -1113,14 +1115,14 @@ function openbrowser(ind) {
         }
     })
     if(!user.token) {
-        document.getElementById("topplays").innerHTML = "No API key provided. Check settings";
+        document.getElementsByClassName("justcenter")[0].innerHTML = "No API key provided. Check settings";
     } else if(!diffs[0]) {
-        document.getElementById("topplays").innerHTML = "Only Standard is supported."; 
+        document.getElementsByClassName("justcenter")[0].innerHTML = "Only Standard is supported."; 
     } else {
         request.get(`https://osu.ppy.sh/api/get_scores?${querystring.stringify({k: user.token, b: diffs[diffselected].id, limit: 50})}`, function(err, res, body) {
             body = JSON.parse(body);
             if(body.error) {
-                document.getElementById("topplays").innerHTML = "Invalid API key.";
+                document.getElementsByClassName("justcenter")[0].innerHTML = "Invalid API key.";
             } else {
                 let table = "";
                 body.forEach((score, ind) => {
@@ -1153,6 +1155,7 @@ function openbrowser(ind) {
     document.getElementsByClassName('cs')[0].innerHTML = `CS: ${mapset.beatmaps[diffselected].cs}`;
     document.getElementsByClassName('od')[0].innerHTML = `OD: ${mapset.beatmaps[diffselected].accuracy}`;
     document.getElementsByClassName('hp')[0].innerHTML = `HP: ${mapset.beatmaps[diffselected].drain}`;
+    bpmwithoutdt = Number(document.getElementsByClassName('bpm')[0].innerHTML.split(" ")[1])
     updatePP(mapset.beatmaps[diffselected].id);
     document.getElementById('browser').style.display = "flex";
     setTimeout(function () {
@@ -1172,12 +1175,12 @@ function changeDiff(diffind, star, ar, cs, od, hp, id) {
     document.getElementsByClassName('od')[0].innerHTML = `OD: ${od}`;
     document.getElementsByClassName('hp')[0].innerHTML = `HP: ${hp}`;
     if(!user.token) {
-        document.getElementById("topplays").innerHTML = "No API key provided. Check settings";
+        document.getElementsByClassName("justcenter")[0].innerHTML = "No API key provided. Check settings";
     } else {
         request.get(`https://osu.ppy.sh/api/get_scores?${querystring.stringify({k: user.token, b: id, limit: 50})}`, function(err, res, body) {
             body = JSON.parse(body);
             if(body.error) {
-                document.getElementById("topplays").innerHTML = "Invalid API key.";
+                document.getElementsByClassName("justcenter")[0].innerHTML = "Invalid API key.";
             } else {
                 let table = "";
                 body.forEach((score, ind) => {
@@ -1232,7 +1235,12 @@ function updatePP(beatmap) {
     if(hr == 1) mods += 16;
     if(hd == 1) mods += 8;
     if(fl == 1) mods += 1024;
-    if(dt == 1) mods += 64;
+    if(dt == 1) {
+        mods += 64; 
+        document.getElementsByClassName('bpm')[0].innerHTML = `BPM: ${bpmwithoutdt*1.5}`;
+    } else {
+        document.getElementsByClassName('bpm')[0].innerHTML = `BPM: ${bpmwithoutdt}`;
+    }
     if(fs.existsSync(`./cached/${beatmap}.osu`)) {
         var parser = new ojsama.parser();
         readline.createInterface({
@@ -1243,6 +1251,11 @@ function updatePP(beatmap) {
             var stars = new ojsama.diff().calc({map: map, mods: mods});
             let mapstats = new ojsama.std_beatmap_stats({ar: map.ar, od: map.od, cs: map.cs, hp: map.hp})
             .with_mods(mods);
+            document.getElementsByClassName('star')[0].innerHTML = `<i style="margin-right: 5px;" class="fas fa-star"></i> ${stars.total.toPrecision(3)}`;
+            document.getElementsByClassName('ar')[0].innerHTML = `AR: ${mapstats.ar.toPrecision(3)}`;
+            document.getElementsByClassName('cs')[0].innerHTML = `CS: ${mapstats.cs.toPrecision(3)}`;
+            document.getElementsByClassName('od')[0].innerHTML = `OD: ${mapstats.od.toPrecision(3)}`;
+            document.getElementsByClassName('hp')[0].innerHTML = `HP: ${mapstats.hp.toPrecision(3)}`;
             var pp = Math.round(ojsama.ppv2({
                 stars: stars,
                 combo: map.max_combo(),
@@ -1315,7 +1328,8 @@ function saveDLs() {
 }
 
 function loadDLs() {
-    var path = remote.dialog.showOpenDialog({title: 'Load beatmapsets list', filters: [{name: "JSON files", extensions: ['json']}, properties: ['openFile']]});
-    var bms = JSON.parse(fs.readFileSync(path).toString());
+    //var path = remote.dialog.showOpenDialog({title: 'Load beatmapsets list', filters: [{name: "JSON files", extensions: ['json']}, properties: ['openFile']]});
+    //var bms = JSON.parse(fs.readFileSync(path).toString());
     //
+    
 }
