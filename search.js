@@ -901,6 +901,7 @@ function openSettings() {
     }
     document.getElementById('username').value = user.username;
     document.getElementById('password').value = user.password;
+    if(user.token) document.getElementById('token').value = user.token;
     document.getElementById('profile-pic').style.background = 'url("https://a.ppy.sh/' + userid + '")'
 }
 
@@ -960,7 +961,7 @@ function openMyaccOptions() {
     document.getElementById('settings-main').innerHTML = fs.readFileSync("./settings/accountSettings.html").toString();
     document.getElementById('username').value = user.username;
     document.getElementById('password').value = user.password;
-    document.getElementById('token').value = user.token;
+    if(user.token) document.getElementById('token').value = user.token;
     document.getElementById('profile-pic').style.background = 'url("https://a.ppy.sh/' + userid + '")';
 }
 
@@ -1116,8 +1117,6 @@ function openbrowser(ind) {
     })
     if(!user.token) {
         document.getElementsByClassName("justcenter")[0].innerHTML = "No API key provided. Check settings";
-    } else if(!diffs[0]) {
-        document.getElementsByClassName("justcenter")[0].innerHTML = "Only Standard is supported."; 
     } else {
         request.get(`https://osu.ppy.sh/api/get_scores?${querystring.stringify({k: user.token, b: diffs[diffselected].id, limit: 50})}`, function(err, res, body) {
             body = JSON.parse(body);

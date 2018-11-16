@@ -23,13 +23,12 @@
   "author": "OctopuSS & 4FuN",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^3.0.7",
-    "electron-builder": "^20.31.2",
+    "electron": "^3.0.9",
+    "electron-builder": "^20.34.0",
     "electron-packager": "^12.2.0"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
-    "cloudscraper": "^1.5.0",
     "electron-drag": "^1.2.2",
     "ojsama": "^1.0.19",
     "querystring": "^0.2.0",

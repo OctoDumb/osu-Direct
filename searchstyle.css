@@ -461,7 +461,7 @@ h2 {
     text-shadow: 0px 0px 12px rgba(0, 0, 0, 1);
     color: white;
     position: absolute;
-    transform: translateY(-95px) translateX(410px);
+    transform: translateY(-95px) translateX(372px);
     opacity: 0;
     text-shadow: 0px 0px 12px rgba(0, 0, 0, 1);
     transition: 0.5s;
@@ -473,7 +473,7 @@ h2 {
 }
 
 .play:hover {
-    transform: translateY(-95px) translateX(410px) scale(1.05);
+    transform: translateY(-95px) translateX(372px) scale(1.05);
     transition: 1s;
     cursor: pointer;
 }
@@ -923,7 +923,7 @@ h5 {
     display: flex;
     justify-content: center;
     margin-top: 10px;
-    height: 340px;
+    height: 340px !important;
     color: black;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
@@ -933,6 +933,7 @@ h5 {
 
 .table {
     color: black;
+    height: 340px !important;
     border-radius: 10px !important;
     text-align: center;
 }
