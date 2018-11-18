@@ -22,7 +22,7 @@
         <i id="arrowup" onclick="window.scrollTo({top: 0, left: 0, behavior: 'smooth'})" class="fas arrowup fa-chevron-circle-up fa-3x"></i>
         <div id="downloads" onmouseover="document.getElementById('downloads').classList.add('open')" onmouseout="document.getElementById('downloads').classList.remove('open')" class="downloads">
             <div id="dback"></div>
-            <h2>Downloads</h2>
+            <h2>Queue</h2>
             <div id="downloads-list">
 
             </div>
@@ -146,6 +146,9 @@
                     <div id="myacc-op" onclick="openMyaccOptions()" class="option option-selected">
                         <h1>My Account</h1>
                     </div>
+                    <div id="friends-op" onclick="openFriendsOptions()" class="option">
+                        <h1>Friends</h1>
+                    </div>
                     <div id="backup-op" onclick="openbackupOptions()" class="option">
                         <h1>Backup</h1>
                     </div>
@@ -174,8 +177,8 @@
                                 <input class="input" id="token" type="text" value="Token">
                             </div>
                             <center>
-                                <input onclick="saveToken()" style="width: 90px; transform: translateX(-20px); margin: 10px; margin-bottom: 5px;" class="btn btn-success" value="Save">
-                                <input onclick="signout()" style="width: 90px; transform: translateX(-20px); margin: 10px; margin-bottom: 5px;" class="btn btn-danger" value="Sign out">
+                                <button onclick="saveToken()" style="width: 90px; transform: translateX(-20px); margin: 10px; margin-bottom: 5px;" class="btn btn-success">Save</button>
+                                <button onclick="signout()" style="width: 90px; transform: translateX(-20px); margin: 10px; margin-bottom: 5px;" class="btn btn-danger">Sign out</button>
                             </center>
                             </div>
                         </div>
@@ -237,8 +240,11 @@
                     </div>
                     <div class="top-plays">
                         <div class="select">
-                            <div class="top-all top top-selected">
+                            <div onclick="document.getElementsByClassName('top-all')[0].className = 'top-all top  top-selected'; document.getElementsByClassName('top-friend')[0].className = 'top-friend top'; globalRanking()" class="top-all top top-selected">
                                 Global Ranking
+                            </div>
+                            <div onclick="document.getElementsByClassName('top-all')[0].className = 'top-all top'; document.getElementsByClassName('top-friend')[0].className = 'top-friend top top-selected'; friendtop()" class="top-friend top">
+                                Friend Ranking
                             </div>
                         </div>
                         <div class="justcenter">
@@ -257,105 +263,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="topplays">
-                                    <tr>
-                                        <th scope="row">#1</th>
-                                        <td>S</td>
-                                        <td>5 954 241</td>
-                                        <td>95.83%</td>
-                                        <td>EroFish</td>
-                                        <td>561x</td>
-                                        <td>375/25/0/0</td>
-                                        <td>175</td>
-                                        <td>HDHR</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">#2</th>
-                                        <td>S</td>
-                                        <td>5 954 241</td>
-                                        <td>95.83%</td>
-                                        <td>EroFish</td>
-                                        <td>561x</td>
-                                        <td>375/25/0/0</td>
-                                        <td>175</td>
-                                        <td>HDHR</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">#3</th>
-                                        <td>S</td>
-                                        <td>5 954 241</td>
-                                        <td>95.83%</td>
-                                        <td>EroFish</td>
-                                        <td>561x</td>
-                                        <td>375/25/0/0</td>
-                                        <td>175</td>
-                                        <td>HDHR</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">#4</th>
-                                        <td>S</td>
-                                        <td>5 954 241</td>
-                                        <td>95.83%</td>
-                                        <td>EroFish</td>
-                                        <td>561x</td>
-                                        <td>375/25/0/0</td>
-                                        <td>175</td>
-                                        <td>HDHR</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">#5</th>
-                                        <td>S</td>
-                                        <td>5 954 241</td>
-                                        <td>95.83%</td>
-                                        <td>EroFish</td>
-                                        <td>561x</td>
-                                        <td>375/25/0/0</td>
-                                        <td>175</td>
-                                        <td>HDHR</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">#5</th>
-                                        <td>S</td>
-                                        <td>5 954 241</td>
-                                        <td>95.83%</td>
-                                        <td>EroFish</td>
-                                        <td>561x</td>
-                                        <td>375/25/0/0</td>
-                                        <td>175</td>
-                                        <td>HDHR</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">#5</th>
-                                        <td>S</td>
-                                        <td>5 954 241</td>
-                                        <td>95.83%</td>
-                                        <td>EroFish</td>
-                                        <td>561x</td>
-                                        <td>375/25/0/0</td>
-                                        <td>175</td>
-                                        <td>HDHR</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">#5</th>
-                                        <td>S</td>
-                                        <td>5 954 241</td>
-                                        <td>95.83%</td>
-                                        <td>EroFish</td>
-                                        <td>561x</td>
-                                        <td>375/25/0/0</td>
-                                        <td>175</td>
-                                        <td>HDHR</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">#5</th>
-                                        <td>S</td>
-                                        <td>5 954 241</td>
-                                        <td>95.83%</td>
-                                        <td>EroFish</td>
-                                        <td>561x</td>
-                                        <td>375/25/0/0</td>
-                                        <td>175</td>
-                                        <td>HDHR</td>
-                                    </tr>
+                                    
                                 </tbody>
                             </table>
                         </div>

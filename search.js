@@ -56,7 +56,7 @@ let user = JSON.parse(fs.readFileSync("./loginData.json"));
 
 var ignored = JSON.parse(fs.readFileSync("./ignored.json"));
 
-let dlPath = fs.readFileSync("./downloadDirectory.txt").toString().replace('\\', '/');
+let dlPath = fs.readFileSync("./downloadDirectory.txt").toString().split('\\').join('/');
 
 let rawDirs = fs.readdirSync(dlPath);
 
@@ -80,6 +80,8 @@ let cancel = 0;
 let userid = 0;
 
 let listrestor = 0;
+
+let nickfriend = []
 
 var arrayOfDownloaded = [];
 if(!fs.existsSync("./downloaded.json")) {
@@ -125,6 +127,10 @@ request.post({
     request.get("https://osu.ppy.sh/forum/ucp.php?i=163", function(err, res, body) {
         var $ = cheerio.load(body);
         let nickname = [];
+        let friendnick = $(".paddingboth").html().split('<div class="paddingboth">')[6].toString().replace(/<\/?[^>]+>/g,'').split("\t").join("").split("\n");
+        friendnick.forEach(nick => {
+            if(nick != "") nickfriend.push(nick);
+        })
         let friendid = $(".paddingboth").html().split('<div class="paddingboth">')[6].split("\t").join("").split("\n");
         friendid.forEach(nick => {
             if(nick.indexOf("profile_friend mutual") > -1) {
@@ -207,6 +213,12 @@ function getDiffColor(rating) {
 var lastparams = {};
 var lastpage;
 
+let allowedFriends = [user.username];
+
+if(fs.existsSync("./friends.json")) {
+    allowedFriends = JSON.parse(fs.readFileSync("./friends.json"));
+}
+
 let starznak = ">=";
 let arznak = ">=";
 let odznak = ">=";
@@ -250,6 +262,8 @@ function searchBeatmapsets() {
         let beatmapsets = JSON.parse(body).beatmapsets;
         if(beatmapsets.length == 0) {
             document.getElementById("maplist").innerHTML = "<h2>Nothing found</h2>";
+            document.getElementById("loader-proc").style.display = "none";
+            cancel++;
             return;
         }
         var maplist = "";
@@ -422,6 +436,7 @@ function loadMore() {
         let beatmapsets = JSON.parse(body).beatmapsets;
         if(beatmapsets.length == 0) {
             document.getElementById("loader-proc").style.display = "none";
+            cancel++;
             document.getElementById("nextPageButton").parentNode.removeChild(document.getElementById("nextPageButton"));
             document.getElementById("maplist").innerHTML += "<h2>Nothing found</h2>";
             return;
@@ -544,7 +559,6 @@ function loadMore() {
             ind++;
         })
         let = numberDiv = document.getElementsByClassName('map');
-        console.log(numberDiv.length)
         if(maplist != "" && numberDiv.length >= 10) {
             if(!loaded) {
                 loaded = true;
@@ -641,22 +655,47 @@ window.onscroll = function() {
     }
 }
 
+var queue = [];
+
 function donwloadBeatmapset(id, title, artist) {
-    var alreadyDownloading = false;
-    downloads.forEach(dl => {
-        if(dl == id) {
-            alreadyDownloading = true;
+    var inQueue = false;
+    var qInd = -1;
+    queue.forEach((q, ind) => {
+        if(q.id == id) {
+            inQueue = true;
+            qInd = ind;
         }
     })
-    if(settings.noVideo) id += "n";
-    if(alreadyDownloading) {
-        var scrolled = window.pageYOffset || document.documentElement.scrollTop;
-        setTimeout(function() {
-            window.scrollTo(0, scrolled);
-        }, 1)
-        createNotification('error', 'You are already downloading this mapset!');
+    if(queue.length != 0 && !inQueue) {
+        queue.push({id: id, title: title, artist: artist});
+        document.getElementById("downloads-list").innerHTML += `<div class="dlprogress" id="dl-${id}">
+            <div class="dlprogress-name">${title} - ${artist}</div>
+            <div class="dlprogress-percent" id="percent-${id}">0%</div>
+            <div class="dlprogress-bar" id="progress-${id}"></div>
+        </div>`;
+        createNotification('started', `Added ${title} - ${artist} to queue`);
         return;
     }
+    if(inQueue) {
+        if(qInd != 0) {
+            createNotification('error', 'This mapset is already in a queue');
+            return;
+        }
+    }
+
+    if(!inQueue) {
+        queue.push({id: id, title: title, artist: artist});
+        document.getElementById("downloads-list").innerHTML += `<div class="dlprogress" id="dl-${id}">
+            <div class="dlprogress-name">${title} - ${artist}</div>
+            <div class="dlprogress-percent" id="percent-${id}">0%</div>
+            <div class="dlprogress-bar" id="progress-${id}"></div>
+        </div>`;
+    }
+
+    let rawID = id;
+
+    if(settings.noVideo) id += "n";
+
     const notAvailableRegex = /This download is no longer available/i;
     if(!fs.existsSync("./Beatmapsets")) fs.mkdirSync("./Beatmapsets");
 
@@ -668,45 +707,42 @@ function donwloadBeatmapset(id, title, artist) {
     }, 1)
     
     downloads.push(id);
-    let dlProgress = `<div class="dlprogress" id="dl-${id}">
-        <div class="dlprogress-name">${title} - ${artist}</div>
-        <div class="dlprogress-percent" id="percent-${id}">0%</div>
-        <div class="dlprogress-bar" id="progress-${id}"></div>
-        </div>`
-    document.getElementById("downloads-list").innerHTML += dlProgress;
-    let stream = fs.createWriteStream(`./Beatmapsets/${id.toString().split("n").join("")} ${title} - ${artist}.osz`);
+
+    let stream = fs.createWriteStream(`./Beatmapsets/${rawID}.osz`);
     // let progressCount = document.getElementById(`percent-${id}`);
     // let progressCount = new CountUp(`percent-${id}`, 0, 0, 0, 1, {suffix: "%"});
     // progressCount.start();
     progress(request.get(`https://osu.ppy.sh/d/${id}`))
     .on('progress', function(state) {
-        document.getElementById(`progress-${id}`).style.width = `${Math.round(state.percent * 100)}%`;
+        document.getElementById(`progress-${rawID}`).style.width = `${Math.round(state.percent * 100)}%`;
         // progressCount.update(Math.round(state.percent * 100));
-        document.getElementById(`percent-${id}`).innerHTML = `${Math.round(state.percent * 100)}%`;
+        document.getElementById(`percent-${rawID}`).innerHTML = `${Math.round(state.percent * 100)}%`;
     }).on('error', (err) => {
         stream.end();
-        document.getElementById(`dl-${id}`).parentNode.removeChild(document.getElementById(`dl-${id}`));
+        document.getElementById(`dl-${rawID}`).parentNode.removeChild(document.getElementById(`dl-${rawID}`));
         createNotification('error', `Failed downloading ${title} - ${artist}`);
         return;
     }).pipe(stream).on('finish', () => {
-        if(arrayOfDownloaded.indexOf(Number(id.split("n")[0])) == -1) arrayOfDownloaded.push(Number(id.split("n")[0]));
+        if(arrayOfDownloaded.indexOf(Number(String(id).split("n")[0])) == -1) arrayOfDownloaded.push(Number(String(id).split("n")[0]));
         fs.writeFileSync("./downloaded.json", JSON.stringify(arrayOfDownloaded));
         downloads.forEach((dl,ind) => {
             if(dl == id) downloads.splice(ind, 1);
         })
         stream.end();
         // fs.renameSync(`./Beatmapsets/${id}.osz`, `${dlPath}/${id}.osz`);
-        let rs = fs.createReadStream(`./Beatmapsets/${id.toString().split("n").join("")} ${title} - ${artist}.osz`);
-        let ws = fs.createWriteStream(`${dlPath}/${id.toString().split("n").join("")} ${title} - ${artist}.osz`);
+        let rs = fs.createReadStream(`./Beatmapsets/${rawID}.osz`);
+        let ws = fs.createWriteStream(`${dlPath}/${rawID}.osz`);
         rs.pipe(ws);
         rs.on('end', () => {
-            fs.unlinkSync(`./Beatmapsets/${id.toString().split("n").join("")} ${title} - ${artist}.osz`);
-            document.getElementById(`dl-${id}`).parentNode.removeChild(document.getElementById(`dl-${id}`));
+            fs.unlinkSync(`./Beatmapsets/${rawID}.osz`);
+            document.getElementById(`dl-${rawID}`).parentNode.removeChild(document.getElementById(`dl-${rawID}`));
             createNotification('success', `Finished downloading ${title} - ${artist}`);
-            if(title == "Restoring") {
-                listrestor++;
-                restoreBeatmaps(true);
-            }
+            queue.shift();
+            if(queue[0]) donwloadBeatmapset(queue[0].id, queue[0].title, queue[0].artist);
+            // if(title == "Restoring") {
+            //     listrestor++;
+            //     restoreBeatmaps(true);
+            // }
         })
     })
 }
@@ -917,7 +953,6 @@ function signout() {
 
 function loadCB() {
     let checkboxes = document.getElementsByClassName("cb-circle");
-    console.log(checkboxes);
     for(let i = 0; i < checkboxes.length; i++) {
         let cb = checkboxes[i];
         let param = cb.getAttribute("param");
@@ -942,14 +977,31 @@ function loadCB() {
     }
 }
 
+function addFriend(nick) {
+    if(allowedFriends.indexOf(nick) != -1) {
+        allowedFriends.splice(allowedFriends.indexOf(nick), 1);
+        openFriendsOptions();
+        fs.writeFileSync("./friends.json", JSON.stringify(allowedFriends));
+    } else {
+        if(allowedFriends.length == 21) {
+            document.getElementById("allowedFriendsCount").classList.add("friendsFull");
+            setTimeout(() => {document.getElementById("allowedFriendsCount").classList.remove("friendsFull")}, 700);
+        } else {
+            allowedFriends.push(nick);
+            openFriendsOptions();
+            fs.writeFileSync("./friends.json", JSON.stringify(allowedFriends));
+        }
+    }
+}
+
 function openGeneralOptions() {
     document.getElementById('general-op').className = "option option-selected";
     document.getElementById('backup-op').className = "option";
+    document.getElementById('friends-op').className = "option";
     document.getElementById('myacc-op').className = "option";
     document.getElementById('change-op').className = "option";
     document.getElementById('settings-main').innerHTML = fs.readFileSync("./settings/generalSettings.html").toString();
-    // document.getElementById("search-novideo").checked = settings.noVideo;
-    // document.getElementById("search-downloaded").checked = settings.showDownloaded;
+    document.getElementById('currentDirectory').innerHTML = "Current download directory: " + dlPath;
     loadCB();
 }
 
@@ -957,6 +1009,7 @@ function openMyaccOptions() {
     document.getElementById('myacc-op').className = "option option-selected";
     document.getElementById('backup-op').className = "option";
     document.getElementById('general-op').className = "option";
+    document.getElementById('friends-op').className = "option";
     document.getElementById('change-op').className = "option";
     document.getElementById('settings-main').innerHTML = fs.readFileSync("./settings/accountSettings.html").toString();
     document.getElementById('username').value = user.username;
@@ -969,8 +1022,29 @@ function openbackupOptions() {
     document.getElementById('backup-op').className = "option option-selected";
     document.getElementById('myacc-op').className = "option";
     document.getElementById('general-op').className = "option";
+    document.getElementById('friends-op').className = "option";
     document.getElementById('change-op').className = "option";
     document.getElementById('settings-main').innerHTML = fs.readFileSync("./settings/backupSettings.html");
+}
+
+function openFriendsOptions() {
+    document.getElementById('backup-op').className = "option";
+    document.getElementById('myacc-op').className = "option";
+    document.getElementById('general-op').className = "option";
+    document.getElementById('change-op').className = "option";
+    document.getElementById('friends-op').className = "option option-selected";
+    document.getElementById('settings-main').innerHTML = fs.readFileSync("./settings/friendsSettings.html");
+    let listfriends = `<h1>Click to select players to be displayed in the Friends top <a onclick="allowedFriends = ['${user.username}']; openFriendsOptions();" style="margin-left: 3px; color: rgb(44, 92, 252);"> (Click to reset)</a></h1><span id="allowedFriendsCount">${allowedFriends.length - 1}/20</span><br>`;
+    let ind = 0;
+    nickfriend.forEach(nick => {
+        if(allowedFriends.indexOf(`${nick}`) == -1) {
+            listfriends += `<div onclick="addFriend('${nick}');" class="friend">${nick}</div>`;
+        } else {
+            listfriends += `<div onclick="addFriend('${nick}')"; class="friend friend-selected">${nick}</div>`
+        }
+        ind++;
+    })
+    document.getElementById('frinds-list').innerHTML = listfriends;
 }
 
 function openChangelogOptions() {
@@ -978,6 +1052,7 @@ function openChangelogOptions() {
     document.getElementById('myacc-op').className = "option";
     document.getElementById('general-op').className = "option";
     document.getElementById('backup-op').className = "option";
+    document.getElementById('friends-op').className = "option";
     document.getElementById('settings-main').innerHTML = fs.readFileSync("./settings/changelog.html");
 }
 
@@ -990,39 +1065,33 @@ function restoreBeatmaps(force) {
         fs.readdirSync(dlPath).forEach(dpath => {
             existsNow.push(dpath.split(" ")[0].replace('n', "").split(".")[0]);
         })
-        let missingmaps = [];
-        arrayOfDownloaded.forEach((dld, ind) => {
+        let missing = [];
+        arrayOfDownloaded.forEach((dld) => {
             if(existsNow.indexOf(String(dld)) == -1) {
-                missingmaps.push(Number(dld))
+                missing.push(Number(dld))
             }
         })
-        console.log(missingmaps);
-        if(existsNow.indexOf(String(missingmaps[0])) == -1 && missingmaps.length != 0) {
-            donwloadBeatmapset(Number(missingmaps[0]), "Restoring", `#${listrestor+1}`);
-            console.log(100/(missingmapsnum/listrestor)/1.42)
-            document.getElementById("restore").style.width = 100/(missingmapsnum/listrestor)/1.42 + "vw";
-            if(restorstarted == 0) {
-                document.getElementsByClassName("restorebg")[0].style.bottom = "10px";
-                document.getElementById("restore").style.bottom = "10px";
-                missingmapsnum = missingmaps.length;
-                restorstarted++;
-            }
-        } else {
-            document.getElementById("restore").style.width = "100vw";
-            setTimeout(function () {
-                document.getElementsByClassName("restorebg")[0].style.bottom = "-10vw";
-                document.getElementById("restore").style.bottom = "-10vw";
-                document.getElementById("restore").style.width = "0vw";
-            }, 1000)
-        }
-        // arrayOfDownloaded.forEach((dld, ind) => {
-        //     if(existsNow.indexOf(String(dld)) == -1) {
-        //         donwloadBeatmapset(Number(dld), "Restoring", `#${ind+1}`);
-        //     }
-        // })
+        missing.forEach((mis, ind) => {
+            donwloadBeatmapset(mis, "Restoring", `${ind+1} of ${missing.length}`);
+        })
     } else {
         listrestor = 0;
-        document.getElementById("tooManyMapsets").classList.add('shown-modal');
+        if(arrayOfDownloaded.length > 50) document.getElementById("tooManyMapsets").classList.add('shown-modal')
+        else {
+            let existsNow = [];
+            fs.readdirSync(dlPath).forEach(dpath => {
+                existsNow.push(dpath.split(" ")[0].replace('n', "").split(".")[0]);
+            })
+            let missing = [];
+            arrayOfDownloaded.forEach((dld) => {
+                if(existsNow.indexOf(String(dld)) == -1) {
+                    missing.push(Number(dld))
+                }
+            })
+            missing.forEach((mis, ind) => {
+                donwloadBeatmapset(mis, "Restoring", `${ind+1} of ${missing.length}`);
+            })
+        }
     }
 }
 
@@ -1084,6 +1153,8 @@ function parseMods(m) {
 
 let bpmwithoutdt = 0;
 
+let lastbeatmaps = "";
+
 function openbrowser(ind) {
     let mapset = loadedMapsets[ind];
     let diffs = osuSort(mapset.beatmaps);
@@ -1115,39 +1186,13 @@ function openbrowser(ind) {
             document.getElementsByClassName('map-all-diffs')[0].innerHTML += `<div onclick="changeDiff(${i},${mapset.beatmaps[i].difficulty_rating.toPrecision(3)}, ${mapset.beatmaps[i].ar}, ${mapset.beatmaps[i].cs}, ${mapset.beatmaps[i].accuracy}, ${mapset.beatmaps[i].drain}, ${mapset.beatmaps[i].id})" class="map-diff">${modeIcons[diff.mode_int]} ${diff.version}</div>`;
         }
     })
+    lastbeatmaps = mapset.beatmaps[diffselected].id;
     if(!user.token) {
         document.getElementsByClassName("justcenter")[0].innerHTML = "No API key provided. Check settings";
     } else {
-        request.get(`https://osu.ppy.sh/api/get_scores?${querystring.stringify({k: user.token, b: diffs[diffselected].id, limit: 50})}`, function(err, res, body) {
-            body = JSON.parse(body);
-            if(body.error) {
-                document.getElementsByClassName("justcenter")[0].innerHTML = "Invalid API key.";
-            } else {
-                let table = "";
-                body.forEach((score, ind) => {
-                    console.log(score.enabled_mods)
-                    let object = {
-                        300: score.count300,
-                        100: score.count100,
-                        50: score.count50,
-                        miss: score.countmiss
-                    }
-                    let acc = Math.round((parseInt(object["300"]) * 6 + parseInt(object["100"]) * 2 + parseInt(object["50"])) / (parseInt(object["300"]) * 6 + parseInt(object["100"]) * 6 + parseInt(object["50"]) * 6 + parseInt(object.miss*6)) * 10000) / 100;
-                    table+=`<tr>
-                        <th scope="row">#${ind+1}</th>
-                        <td>${score.rank}</td>
-                        <td>${score.score}</td>
-                        <td>${acc}%</td>
-                        <td>${score.username}</td>
-                        <td>${score.maxcombo}x</td>
-                        <td>${object['300']}/${object['100']}/${object['50']}/${object.miss}</td>
-                        <td>${Math.round(Number(score.pp))}</td>
-                        <td>${parseMods(parseInt(score.enabled_mods))}</td>
-                    </tr>`
-                })
-                document.getElementById("topplays").innerHTML = table;
-            }                                                
-        })
+        if (document.getElementsByClassName('top-friend')[0].className == "top-friend top top-selected") {
+            friendtop();
+        } else {globalRanking()}
     }
     document.getElementsByClassName('star')[0].innerHTML = `<i style="margin-right: 5px;" class="fas fa-star"></i> ${mapset.beatmaps[diffselected].difficulty_rating.toPrecision(3)}`;
     document.getElementsByClassName('ar')[0].innerHTML = `AR: ${mapset.beatmaps[diffselected].ar}`;
@@ -1161,7 +1206,6 @@ function openbrowser(ind) {
         document.getElementById('browser-window').style.opacity = "1";
         document.getElementById('browser-window').style.transform = "scale(1)";
     }, 100)
-    console.log(mapset);
 }
 
 function changeDiff(diffind, star, ar, cs, od, hp, id) {
@@ -1176,36 +1220,9 @@ function changeDiff(diffind, star, ar, cs, od, hp, id) {
     if(!user.token) {
         document.getElementsByClassName("justcenter")[0].innerHTML = "No API key provided. Check settings";
     } else {
-        request.get(`https://osu.ppy.sh/api/get_scores?${querystring.stringify({k: user.token, b: id, limit: 50})}`, function(err, res, body) {
-            body = JSON.parse(body);
-            if(body.error) {
-                document.getElementsByClassName("justcenter")[0].innerHTML = "Invalid API key.";
-            } else {
-                let table = "";
-                body.forEach((score, ind) => {
-                    console.log(score.enabled_mods)
-                    let object = {
-                        300: score.count300,
-                        100: score.count100,
-                        50: score.count50,
-                        miss: score.countmiss
-                    }
-                    let acc = Math.round((parseInt(object["300"]) * 6 + parseInt(object["100"]) * 2 + parseInt(object["50"])) / (parseInt(object["300"]) * 6 + parseInt(object["100"]) * 6 + parseInt(object["50"]) * 6 + parseInt(object.miss*6)) * 10000) / 100;
-                    table+=`<tr>
-                        <th scope="row">#${ind+1}</th>
-                        <td>${score.rank}</td>
-                        <td>${score.score}</td>
-                        <td>${acc}%</td>
-                        <td>${score.username}</td>
-                        <td>${score.maxcombo}x</td>
-                        <td>${object['300']}/${object['100']}/${object['50']}/${object.miss}</td>
-                        <td>${Math.round(Number(score.pp))}</td>
-                        <td>${parseMods(parseInt(score.enabled_mods))}</td>
-                    </tr>`
-                })
-                document.getElementById("topplays").innerHTML = table;
-            }                                                
-        })
+        if (document.getElementsByClassName('top-friend')[0].className == "top-friend top top-selected") {
+            friendtop();
+        } else {globalRanking()}
     }
     updatePP(id);
 }
@@ -1225,7 +1242,6 @@ let dt = 0;
 
 let ppcalcend = 0;
 
-let lastbeatmaps = "";
 
 function updatePP(beatmap) {
     let mods = 0;
@@ -1313,12 +1329,18 @@ function saveToken() {
         token: document.getElementById("token").value
     }
     fs.writeFileSync("./loginData.json", JSON.stringify(user));
+    let mainWindow = new remote.BrowserWindow({width: 400, height: 300, frame: false, icon: __dirname + "/icon.ico"});
+    let thisWindow = remote.getCurrentWindow();
+    mainWindow.setPosition(thisWindow.getPosition()[0]+300, thisWindow.getPosition()[1]+200);
+    mainWindow.loadFile("login.html");
+    window.close();
 }
 
 function changeDLDir() {
     var path = remote.dialog.showOpenDialog({title: 'Choose osu!/Songs directory', properties: ['openDirectory']});
     fs.writeFileSync("downloadDirectory.txt", path);
-    dlPath = path.replace('\\', '/');
+    dlPath = fs.readFileSync('downloadDirectory.txt').toString().split('\\').join('/');
+    document.getElementById('currentDirectory').innerHTML = `Current download directory: ${dlPath}`;
 }
 
 function saveDLs() {
@@ -1327,8 +1349,178 @@ function saveDLs() {
 }
 
 function loadDLs() {
-    //var path = remote.dialog.showOpenDialog({title: 'Load beatmapsets list', filters: [{name: "JSON files", extensions: ['json']}, properties: ['openFile']]});
-    //var bms = JSON.parse(fs.readFileSync(path).toString());
-    //
-    
+    var path = remote.dialog.showOpenDialog({title: 'Load beatmapsets list', filters: [{name: "JSON files", extensions: ['json'], properties: ['openFile']}]});
+    var bms = JSON.parse(fs.readFileSync(path[0]).toString());
+    let existsNow = [];
+    fs.readdirSync(dlPath).forEach(dpath => {
+        existsNow.push(dpath.split(" ")[0].replace('n', "").split(".")[0]);
+    })
+    let missing = [];
+    bms.forEach((dld) => {
+        if(existsNow.indexOf(String(dld)) == -1) {
+            missing.push(Number(dld))
+        }
+    })
+    missing.forEach((bm, ind)=> {
+        donwloadBeatmapset(bm, "Loading list", `${ind+1} of ${missing.length}`);
+    })
+}
+
+async function asyncForEach(array, callback) {
+    for(let i = 0; i < array.length; i++) {
+        await callback(array[i], i, array);
+    }
+}
+
+async function getFTop() {
+    return new Promise(async function(resolve, reject) {
+        let scores = [];
+        document.getElementsByClassName('justcenter')[0].classList.add('friend-load');
+        await asyncForEach(allowedFriends, async (friend, ind) => {
+            if(ind != 0) {
+                document.getElementById("friendsProgressBar").style.cssText = `width: ${Math.round(ind/(allowedFriends.length - 1)*100)}%`;
+                document.getElementById("friendsProgressBar").setAttribute('aria-valuenow', Math.round(ind/(allowedFriends.length - 1)*100));
+                document.getElementById("friendsProgressBar").innerHTML = `${ind}/${allowedFriends.length -1}`;
+            }
+            try {
+                let score = await getScore(friend);
+                if(score) scores.push(score);
+            } catch(e) {
+                //
+            }
+        });
+        resolve(scores);
+    })
+}
+
+async function getScore(nick) {
+    return new Promise(function(resolve, reject) {
+        request.get(`https://osu.ppy.sh/api/get_scores?${querystring.stringify({k: user.token, b: lastbeatmaps, u: nick})}`, function(err, res, body) {
+            body = JSON.parse(body);
+            if(body.error) {
+                resolve(false);
+            } else {
+                if(body.length == 0) resolve(false);
+                else {
+                    let s = body[0];
+                    let object = {
+                        300: s.count300,
+                        100: s.count100,
+                        50: s.count50,
+                        miss: s.countmiss
+                    }
+                    let acc = Math.round((parseInt(object["300"]) * 6 + parseInt(object["100"]) * 2 + parseInt(object["50"])) / (parseInt(object["300"]) * 6 + parseInt(object["100"]) * 6 + parseInt(object["50"]) * 6 + parseInt(object.miss*6)) * 10000) / 100;
+                    resolve({acc: acc, rank: s.rank, score: Number(s.score), username: s.username, combo: Number(s.maxcombo), stat: `${s.count300}/${s.count100}/${s.count50}/${s.countmiss}`, pp: Number(s.pp), mods: parseMods(parseInt(s.enabled_mods))});
+                }
+            }
+        })
+    })
+}
+
+function sortScores(a, b) {
+    if(a.score > b.score) return -1
+    else if(a.score < b.score) return 1
+    else return 0;
+}
+
+async function friendtop() {
+    if(allowedFriends.length < 2) {
+        document.getElementsByClassName("justcenter")[0].innerHTML = "You didn't choose any friends to show!";        
+    }
+    try {
+        document.getElementsByClassName("justcenter")[0].innerHTML = `<div>Loading friends top..</div><div class="progress" style="width: 200px"><div id="friendsProgressBar" class="progress-bar" role="progressbar" style="width: 0%">0/${allowedFriends.length - 1}</div></div>`;
+        let scores = await getFTop();
+        let friendtop = "";
+        // allowedFriends.forEach(nick => {
+        //     request.get(`https://osu.ppy.sh/api/get_scores?${querystring.stringify({k: user.token, b: lastbeatmaps, u: nick})}`, function(err, res, body) {
+        //         body = JSON.parse(body);
+        //         if(body.error) {
+        //             document.getElementsByClassName("justcenter")[0].innerHTML = "Invalid API key.";
+        //         } else {
+        //             let s = body[0];
+        //             if(body.length == 0) return;
+        //             let object = {
+        //                 300: s.count300,
+        //                 100: s.count100,
+        //                 50: s.count50,
+        //                 miss: s.countmiss
+        //             }
+        //             let acc = Math.round((parseInt(object["300"]) * 6 + parseInt(object["100"]) * 2 + parseInt(object["50"])) / (parseInt(object["300"]) * 6 + parseInt(object["100"]) * 6 + parseInt(object["50"]) * 6 + parseInt(object.miss*6)) * 10000) / 100;
+        //             scores.push({acc: acc, rank: s.rank, score: Number(s.score), username: s.username, combo: s.maxcombo, stat: s.count300 + "/" + s.count100 + "/" + s.countmiss, pp: Number(s.pp), mods: `${parseMods(parseInt(s.enabled_mods))}`})                    
+        //             ind++;
+        //         }                                                
+        //     });
+        // });
+        document.getElementsByClassName('justcenter')[0].classList.remove('friend-load');
+        if(scores.length < 1) {
+            document.getElementsByClassName("justcenter")[0].innerHTML = "None of your friends have scores on this beatmap!";                                    
+        } else {
+            document.getElementsByClassName("justcenter")[0].innerHTML = `<table class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Rank</th>
+                    <th scope="col">Score</th>
+                    <th scope="col">Accuracy</th>
+                    <th scope="col">Player</th>
+                    <th scope="col">Max combo</th>
+                    <th scope="col">Counts</th>
+                    <th scope="col">PP</th>
+                    <th scope="col">Mods</th>
+                    </tr>
+                </thead>
+                <tbody id="topplays">
+                    
+                </tbody>
+            </table>`;
+            scores.sort(sortScores).forEach((s, ind) => {
+                friendtop+=`<tr>
+                            <th scope="row">#${ind+1}</th>
+                            <td>${s.rank}</td>
+                            <td>${s.score}</td>
+                            <td>${s.acc}%</td>
+                            <td>${s.username}</td>
+                            <td>${s.combo}x</td>
+                            <td>${s.stat}</td>
+                            <td>${Math.round(Number(s.pp))}</td>
+                            <td>${s.mods}</td>
+                        </tr>`
+            });
+            document.getElementById("topplays").innerHTML = friendtop;
+        }
+    } catch(e) {
+        console.log(e)
+    }
+}
+
+function globalRanking() {
+    request.get(`https://osu.ppy.sh/api/get_scores?${querystring.stringify({k: user.token, b: lastbeatmaps, limit: 50})}`, function(err, res, body) {
+        body = JSON.parse(body);
+        if(body.error) {
+            document.getElementsByClassName("justcenter")[0].innerHTML = "Invalid API key.";
+        } else {
+            let table = "";
+            body.forEach((score, ind) => {
+                let object = {
+                    300: score.count300,
+                    100: score.count100,
+                    50: score.count50,
+                    miss: score.countmiss
+                }
+                let acc = Math.round((parseInt(object["300"]) * 6 + parseInt(object["100"]) * 2 + parseInt(object["50"])) / (parseInt(object["300"]) * 6 + parseInt(object["100"]) * 6 + parseInt(object["50"]) * 6 + parseInt(object.miss*6)) * 10000) / 100;
+                table+=`<tr>
+                    <th scope="row">#${ind+1}</th>
+                    <td>${score.rank}</td>
+                    <td>${score.score}</td>
+                    <td>${acc}%</td>
+                    <td>${score.username}</td>
+                    <td>${score.maxcombo}x</td>
+                    <td>${object['300']}/${object['100']}/${object['50']}/${object.miss}</td>
+                    <td>${Math.round(Number(score.pp))}</td>
+                    <td>${parseMods(parseInt(score.enabled_mods))}</td>
+                </tr>`
+            })
+            document.getElementById("topplays").innerHTML = table;
+        }                                                
+    })
 }

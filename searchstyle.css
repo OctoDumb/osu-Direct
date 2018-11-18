@@ -915,6 +915,7 @@ h5 {
     padding: 5px 7px;
     font-weight: 600;
     margin-right: 10px;
+    cursor: pointer;
     line-height: 15px;
 }
 
@@ -923,7 +924,7 @@ h5 {
     display: flex;
     justify-content: center;
     margin-top: 10px;
-    height: 340px !important;
+    height: 300px !important;
     color: black;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
@@ -931,15 +932,91 @@ h5 {
     overflow-y: scroll;
 }
 
+.friend-load {
+    flex-direction: column;
+    align-items: center;
+    transform: translateY(-130px);
+}
+
+#frinds-list {
+    width: 520px !important;
+    height: 450px !important;
+    display: block;
+    margin-top: 10px;
+    overflow-y: scroll;
+}
+
+#allowedFriendsCount {
+    transition: .7s ease-in-out;
+    position: absolute;
+    display: block;
+    font-weight: 600;
+}
+
+.friendsFull {
+    color: red;
+    transform: scale(1.35) rotate(-10deg);
+}
+
+.friend {
+    padding: 5px 10px;
+    cursor: pointer;
+    height: 30px;
+    display: inline-block;
+    overflow: hidden;
+    border-radius: 5px;
+    margin: 5px;
+    margin-left: 0px;
+    margin-bottom: 0px;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.friend-selected {
+    padding: 5px 10px;
+    cursor: pointer;
+    height: 30px;
+    display: inline-block;
+    overflow: hidden;
+    border-radius: 5px;
+    margin: 5px;
+    margin-left: 0px;
+    margin-bottom: 0px;
+    background: rgba(40,167,69, 0.8);
+}
+
+.friend:hover {
+    background: rgba(40,167,69, 0.8);
+}
+
+#frinds-list::-webkit-scrollbar {
+    width: 0.6em;
+    border-radius: 10px;
+}
+ 
+#frinds-list::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0,0,0,0);
+    border-radius: 10px;
+}
+ 
+#frinds-list::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 1);
+  border-radius: 10px;
+  outline: 1px solid white;
+}
+
 .table {
     color: black;
     height: 340px !important;
-    border-radius: 10px !important;
+    overflow: hidden !important;
     text-align: center;
 }
 
 .table th {
     font-weight: 500;
+}
+
+.table td {
+    height: 30px !important;
 }
 
 .top-selected {
@@ -955,6 +1032,7 @@ h5 {
     border-top: 2px solid black;
     height: 340px;
     background: white;
+    overflow: hidden !important;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
 }
@@ -1055,7 +1133,7 @@ h5 {
 }
 
 #setting-options {
-    width: 25%;
+    width: 25% !important;
     padding: 10px;
     height: 75vh;
     border-radius: 20px;

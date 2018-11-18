@@ -8,16 +8,10 @@ const shouldQuit = app.makeSingleInstance((argv, workingDirectory) => {
 	if(mainWindow) {
 		if (mainWindow.isMinimized()) mainWindow.restore();
 		mainWindow.focus();
-    mainWindow.webContents.executeJavaScript(`donwloadBeatmapset(${argv[1].split("osu://dl/")[1].split("/")[0]}, 'osu!Direct', 'Redirected from osu!')`);
-    return true;
+        if(argv[1]) mainWindow.webContents.executeJavaScript(`donwloadBeatmapset(${argv[1].split("osu://dl/")[1].split("/")[0]}, 'Redirect', 'Redirected from website')`);
+        return true;
 	} else {
         createWindow();
-        if(fs.existsSync("./loginData.json")) {
-            mainWindow.loadFile('search.html');
-            setTimeout(() => {
-                mainWindow.webContents.executeJavaScript(`donwloadBeatmapset(${argv[1].split("osu://dl/")[1].split("/")[0]}, 'osu!Direct', 'Redirected from osu!')`);
-            }, 3000);
-        }
         return false;
     };
 })

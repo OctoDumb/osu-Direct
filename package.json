@@ -1,6 +1,6 @@
 {
   "name": "osu!Direct",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Super modern replacement for in-game osu!direct",
   "main": "index.js",
   "build": {
@@ -17,8 +17,8 @@
   },
   "scripts": {
     "start": "electron .",
-    "win64": "./node_modules/.bin/electron-builder build",
-    "win32": "./node_modules/.bin/electron-builder build --ia32"
+    "build": "./node_modules/.bin/electron-builder build",
+    "build32": "./node_modules/.bin/electron-builder build --ia32"
   },
   "author": "OctopuSS & 4FuN",
   "license": "ISC",
