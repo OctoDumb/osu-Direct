@@ -75,9 +75,10 @@ label {
     position: fixed;
     top: 0.5vh;
     transform: rotate(0deg);
-    z-index: 100 !important;
+    z-index: 150 !important;
     right: 5px;
     transition: 1s;
+    z-index: 10;
 }
 
 .exit:hover {
@@ -154,16 +155,16 @@ form i {
 }
 
 .map {
-    margin: 5px 13.5px;
-    width: 47%;
+    margin: 1vh 2vw;
+    width: 41vw;
     min-height: 145px;
     display: inline-block;
     background: white;
     overflow: hidden;
+    position: relative;
     border-radius: 20px;
-    z-index: -10;
     transition: 0.3s;
-}
+}  
 
 .status {
     font-weight: 500;
@@ -215,7 +216,7 @@ form i {
     position: absolute;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
-    width: 42.3vw;
+    width: 100%;
     background: url("default-bg.png");
     height: 105px;
     opacity: 1;
@@ -340,9 +341,9 @@ h2 {
     color: white;
     position: fixed;
     top: 0.5vh;
-    z-index: 100 !important;
+    z-index: 150 !important;
     transform: rotate(0deg);
-    right: 25px;
+    right: 45px;
     transition: 1s;
 }
 
@@ -350,15 +351,27 @@ h2 {
     transform: rotate(180deg);
 }
 
+.maxscreen {
+    cursor: pointer;
+    color: white;
+    position: fixed;
+    top: 0.5vh;
+    z-index: 150 !important;
+    transform: rotate(0deg) scale(0.9);
+    right: 22px;
+    transition: 1s;
+}
+
 .settings {
     cursor: pointer;
     color: white;
     position: fixed;
     top: 0.5vh;
-    z-index: 100 !important;
-    right: 45px;
+    z-index: 150 !important;
+    right: 65px;
     transform: scale(0.8) rotate(0deg);
     transition: 1s;
+    z-index: 999999999999999;
 }
 
 .settings:hover {
@@ -368,14 +381,14 @@ h2 {
 .downloads {
     height: 83vh;
     overflow: hidden;
-    width: 40vw;
+    width: 400px;
     background: rgba(0, 0, 0, 0.5);
     position: fixed;
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
     top: 7vh;
     z-index: 9999;
-    left: -38vw;
+    left: -380px;
     transition: 0.4s ease-in-out;
 }
 
@@ -457,14 +470,167 @@ h2 {
     align-items: center;
 }
 
+@media screen and (min-width: 1600px) { 
+    .map {
+        margin: 0.5vh 0.5vw !important;
+        width: 21.5vw !important;
+        min-height: 145px;
+        display: inline-block;
+        background: white;
+        overflow: hidden;
+        position: relative;
+        border-radius: 20px;
+        transition: 0.3s;
+    }  
+}
+
+
+@media screen and (min-width: 1200px) { 
+    .map {
+        margin: 1vh 1vw;
+        width: 28vw;
+        min-height: 145px;
+        display: inline-block;
+        background: white;
+        overflow: hidden;
+        position: relative;
+        border-radius: 20px;
+        transition: 0.3s;
+    }  
+}
+
+@media screen and (max-width: 700px) { 
+    .map {
+        margin: 1vh 2vw;
+        width: 85vw;
+        min-height: 145px;
+        display: inline-block;
+        background: white;
+        overflow: hidden;
+        position: relative;
+        border-radius: 20px;
+        transition: 0.3s;
+    }
+    #search-query {
+        width: 100px !important;
+    }  
+    .downloads {
+        height: 83vh;
+        overflow: hidden;
+        width: 300px;
+        background: rgba(0, 0, 0, 0.5);
+        position: fixed;
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+        top: 7vh;
+        z-index: 9999;
+        left: -280px;
+        transition: 0.4s ease-in-out;
+    }
+    .left-stat {
+        float: left;
+        margin: 7px 1px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 3px 5px;
+        text-align: center;
+        font-size: 12px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 0px 10px black;
+    }
+    
+    .right-stat {
+        float: left;
+        margin: 7px 1px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 3px 5px;
+        text-align: center;
+        font-size: 12px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 0px 10px black;
+    }    
+    .map-stats {
+        width: 100%;
+        position: absolute;
+        transform: translateY(-50px) !important;
+        height: 50px !important;
+        overflow: hidden;
+    }
+    .pp-counter {
+        font-size: 14px !important;
+    }
+
+    .right-mode {
+        font-size: 14px !important;
+    }
+
+    .pp-counter h1 {
+        font-size: 24px !important;
+    }
+
+    #pp-output {
+        font-size: 24px !important;
+    }
+
+    #map-title {
+        font-size: 24px !important;
+    }
+
+    .map-diff {
+        font-size: 14px !important;
+    }
+    #settings-window {
+        width: 95vw !important;
+        height: 75vh;
+        box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 30px, rgba(0, 0, 0, 0.23) 0px 6px 10px;
+        display: flex;
+        opacity: 0;
+        transform: scale(1.1);
+        max-width: 900px;
+        max-height: 700px;
+        position: relative;
+        border-radius: 20px;
+        background: #323232;
+        z-index: 999;   
+        overflow: hidden;
+        transition: 0.5s ease;
+    }
+    #my-account-info-wrapper {
+        background-color: #282828;
+        border: 1px solid #1e1e1e;
+        font-size: 0px;
+        border-radius: 20px;
+        margin-top: 10px;
+        overflow: auto;
+        width: 65vw !important;
+    }
+    #frinds-list {
+        width: 65vw !important;
+        height: 60vh !important;
+        display: block;
+        margin-top: 10px;
+        overflow-y: scroll;
+    }
+}
+
 .play {
     text-shadow: 0px 0px 12px rgba(0, 0, 0, 1);
     color: white;
     position: absolute;
-    transform: translateY(-95px) translateX(372px);
     opacity: 0;
+    position: absolute;
+    top: 10px; 
+    right: 10px;
     text-shadow: 0px 0px 12px rgba(0, 0, 0, 1);
     transition: 0.5s;
+    transform: scale(1);
     cursor: pointer;
 }
 
@@ -473,7 +639,7 @@ h2 {
 }
 
 .play:hover {
-    transform: translateY(-95px) translateX(372px) scale(1.05);
+    transform: scale(1.05);
     transition: 1s;
     cursor: pointer;
 }
@@ -519,6 +685,7 @@ h2 {
     bottom: 10px;
     cursor: pointer;
     left: 10px;
+    z-index: 3;
     color: white;
     opacity: 0;
 }
@@ -789,7 +956,7 @@ h5 {
     border-radius: 50px;
     position: fixed;
     transition: 0.5s ease;
-    bottom: -10vw;
+    bottom: -15vw;
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
 
@@ -805,7 +972,7 @@ h5 {
     background: rgba(255, 255, 255, 1);
     border-radius: 50px;
     position: fixed;
-    bottom: -10vw;
+    bottom: -15vw;
 }
 
 
@@ -826,7 +993,7 @@ h5 {
     align-items: center;
     position: fixed;
     top: 0;
-    z-index: 999;   
+    z-index: 140;   
 }
 
 .main {
@@ -836,7 +1003,8 @@ h5 {
 
 .map-all-diffs {
     position: absolute;
-    transform: translateY(-250px);
+    left: 0px;
+    top: 37px;
 }
 
 .map-diff {
@@ -924,7 +1092,7 @@ h5 {
     display: flex;
     justify-content: center;
     margin-top: 10px;
-    height: 300px !important;
+    height: 50vh !important;
     color: black;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
@@ -939,11 +1107,13 @@ h5 {
 }
 
 #frinds-list {
-    width: 520px !important;
-    height: 450px !important;
+    width: 45vw;
+    height: 60vh;
     display: block;
     margin-top: 10px;
     overflow-y: scroll;
+    max-width: 600px;
+    max-height: 600px;
 }
 
 #allowedFriendsCount {
@@ -1006,7 +1176,7 @@ h5 {
 
 .table {
     color: black;
-    height: 340px !important;
+    height: 700px !important;
     overflow: hidden !important;
     text-align: center;
 }
@@ -1030,7 +1200,7 @@ h5 {
 .top-plays {
     width: 100%;
     border-top: 2px solid black;
-    height: 340px;
+    height: 700px !important;
     background: white;
     overflow: hidden !important;
     border-bottom-left-radius: 20px;
@@ -1083,15 +1253,16 @@ h5 {
 
 .main-back {
     width: 100%;
-    height: 250px;
+    height: 30vh;
     top: 39px;
     position: absolute;
+    display: none;
     background: rgba(0, 0, 0, 0.2);
 }
 
 #map-bg {
     width: 100%;
-    height: 250px;
+    height: 30vh !important;
     background: url("default-bg.png");
 }
 
@@ -1105,6 +1276,7 @@ h5 {
     border-radius: 20px;
     background: rgba(0, 0, 0, 0.9);
     z-index: 999;   
+    position: relative;
     transition: 0.5s ease;
 }
 
@@ -1116,7 +1288,7 @@ h5 {
     align-items: center;
     position: fixed;
     top: 0;
-    z-index: 999;   
+    z-index: 140;   
 }
 
 #settings-window {
@@ -1126,6 +1298,9 @@ h5 {
     display: flex;
     opacity: 0;
     transform: scale(1.1);
+    max-width: 900px;
+    max-height: 700px;
+    position: relative;
     border-radius: 20px;
     background: #323232;
     z-index: 999;   
@@ -1138,6 +1313,7 @@ h5 {
     height: 75vh;
     border-radius: 20px;
     color: white;
+    max-height: 700px !important;
     background: #1e1e1e;
 }
 
@@ -1242,7 +1418,9 @@ h5 {
     border-radius: 20px;
     margin-top: 10px;
     overflow: auto;
-    width: 500px;
+    width: 47vw;
+    max-width: 600px;
+    max-height: 600px;
 }
 
 #my-account-info-wrapper #my-account-info {

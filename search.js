@@ -40,6 +40,18 @@ function hidetray() {
     remote.BrowserWindow.getFocusedWindow().minimize();
 }
 
+let fullscreen = 0;
+
+function maxsize() {
+    if(fullscreen == 0) {
+        remote.BrowserWindow.getFocusedWindow().maximize();
+        fullscreen++;
+    } else {
+        remote.BrowserWindow.getFocusedWindow().unmaximize();
+        fullscreen = 0;
+    }
+}
+
 ipc.on('tray-removed', function() {
     ipc.send('remove-tray');
     trayOn = false;
@@ -889,8 +901,8 @@ document.onkeydown = function(evt) {
         if(openedVolume == 0) {
             openedVolume++;
             setTimeout(function () {
-                    document.getElementsByClassName("volumebg")[0].style.bottom = "-10vh";
-                    document.getElementById("volume").style.bottom = "-10vh";
+                    document.getElementsByClassName("volumebg")[0].style.bottom = "-15vh";
+                    document.getElementById("volume").style.bottom = "-15vh";
                     openedVolume = 0;
             }, 2000)
         }
@@ -1217,6 +1229,7 @@ function changeDiff(diffind, star, ar, cs, od, hp, id) {
     document.getElementsByClassName('cs')[0].innerHTML = `CS: ${cs}`;
     document.getElementsByClassName('od')[0].innerHTML = `OD: ${od}`;
     document.getElementsByClassName('hp')[0].innerHTML = `HP: ${hp}`;
+    lastbeatmaps = id;
     if(!user.token) {
         document.getElementsByClassName("justcenter")[0].innerHTML = "No API key provided. Check settings";
     } else {
@@ -1426,31 +1439,11 @@ function sortScores(a, b) {
 async function friendtop() {
     if(allowedFriends.length < 2) {
         document.getElementsByClassName("justcenter")[0].innerHTML = "You didn't choose any friends to show!";        
-    }
+    } else {
     try {
         document.getElementsByClassName("justcenter")[0].innerHTML = `<div>Loading friends top..</div><div class="progress" style="width: 200px"><div id="friendsProgressBar" class="progress-bar" role="progressbar" style="width: 0%">0/${allowedFriends.length - 1}</div></div>`;
         let scores = await getFTop();
         let friendtop = "";
-        // allowedFriends.forEach(nick => {
-        //     request.get(`https://osu.ppy.sh/api/get_scores?${querystring.stringify({k: user.token, b: lastbeatmaps, u: nick})}`, function(err, res, body) {
-        //         body = JSON.parse(body);
-        //         if(body.error) {
-        //             document.getElementsByClassName("justcenter")[0].innerHTML = "Invalid API key.";
-        //         } else {
-        //             let s = body[0];
-        //             if(body.length == 0) return;
-        //             let object = {
-        //                 300: s.count300,
-        //                 100: s.count100,
-        //                 50: s.count50,
-        //                 miss: s.countmiss
-        //             }
-        //             let acc = Math.round((parseInt(object["300"]) * 6 + parseInt(object["100"]) * 2 + parseInt(object["50"])) / (parseInt(object["300"]) * 6 + parseInt(object["100"]) * 6 + parseInt(object["50"]) * 6 + parseInt(object.miss*6)) * 10000) / 100;
-        //             scores.push({acc: acc, rank: s.rank, score: Number(s.score), username: s.username, combo: s.maxcombo, stat: s.count300 + "/" + s.count100 + "/" + s.countmiss, pp: Number(s.pp), mods: `${parseMods(parseInt(s.enabled_mods))}`})                    
-        //             ind++;
-        //         }                                                
-        //     });
-        // });
         document.getElementsByClassName('justcenter')[0].classList.remove('friend-load');
         if(scores.length < 1) {
             document.getElementsByClassName("justcenter")[0].innerHTML = "None of your friends have scores on this beatmap!";                                    
@@ -1491,6 +1484,7 @@ async function friendtop() {
     } catch(e) {
         console.log(e)
     }
+}
 }
 
 function globalRanking() {

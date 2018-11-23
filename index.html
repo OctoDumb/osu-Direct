@@ -129,10 +129,12 @@
 				mainWindow.loadFile('login.html')
 			} else {
 				document.write("Loading...");
-				let mainWindow = remote.getCurrentWindow();
-				mainWindow.setPosition(mainWindow.getPosition()[0]-300, mainWindow.getPosition()[1]-200);
-				mainWindow.setSize(1000, 700);
-				mainWindow.loadFile('search.html');		
+				const {BrowserWindow} = require('electron').remote
+				let mainWindow = new BrowserWindow({width: 1000, height: 700, frame: false, icon: __dirname + '/icon.ico', minHeight: 500, minWidth: 550, maxWidth: 1920, maxHeight: 1080});
+				mainWindow.center();
+				mainWindow.setResizable(true);
+				mainWindow.loadFile('search.html');	
+				window.close();
 			}
 		})
 	</script>
