@@ -23,15 +23,7 @@ function createWindow() {
 	mainWindow = new BrowserWindow({width: 450, height: 300, frame: false, icon: __dirname + '/icon.ico'});
 	mainWindow.setResizable(false);
 	mainWindow.setFullScreenable(false);
-  	mainWindow.loadFile('login.html');
-
-    mainWindow.on('close', function (event) {
-        win = null;
-    });
-
-    mainWindow.on('minimize', function (event) {
-        mainWindow.minimize();
-    });
+  	mainWindow.loadFile('loading.html');
 }
 
 app.on('window-all-closed', () => {
