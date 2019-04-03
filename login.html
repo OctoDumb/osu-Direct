@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <title>osu!Direct - Log in</title>
+        <link rel="stylesheet" href="assets/css/bootstrap.css">
+        <link rel="stylesheet" href="assets/css/login.css">
+        <link rel="stylesheet" href="assets/FontAwesome/css/all.min.css">
+        <script src="assets/js/login.js"></script>
+    </head>
+    <body>
+        <div class="bg"></div>
+        <div class="header">
+            <div class="header-drag">
+                <span class="header-name">osu!Direct</span>
+            </div>
+            <div class="header-buttons">
+                <div class="header-button minimize">
+                    <i class="fas fa-window-minimize"></i>
+                </div>
+                <div class="header-button close">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <form class="login-form">
+                <div class="form-group">
+                    <label for="usernameInput">Username</label>
+                    <input type="text" class="form-control" id="usernameInput" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label for="passwordInput">Password</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="passwordInput" placeholder="Password" aria-describedby="passwordDesc">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-light" onclick="passwordVisible();return false;" ><i id="passVis" class="fas fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <small id="passwordDesc" class="text-muted">This data is needed to download .osz files and is stored locally</small>
+                </div>
+                <center>
+                    <button type="submit" id="login-btn" class="btn btn-outline-success">Log In</button>
+                </center>
+            </form>
+            <div class="status"></div>
+        </div>
+    </body>
+</html>
