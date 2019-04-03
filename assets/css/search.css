@@ -1,0 +1,333 @@
+.mapset {
+    margin: 20px;
+    position: relative;
+    background: darkgrey;
+    border-radius: 5px;
+    width: 450px;
+    height: 215px;
+    transition: .2s ease-in-out;
+    cursor: pointer;
+    pointer-events: all;
+}
+
+.mapset:hover {
+    box-shadow: 0 0 15px black;
+}
+
+.mapset-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 450px;
+    height: 125px;
+    z-index: 2;
+}
+
+.mapset-header-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    width: 450px;
+    height: 125px;
+    z-index: 3;
+}
+
+.mapset-header-preview-dim {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    width: 450px;
+    height: 125px;
+    background: linear-gradient(bottom, rgba(0, 0, 0, .6) 0%, transparent 100%);
+    background: -o-linear-gradient(bottom, rgba(0, 0, 0, .6) 0%, transparent 100%);
+    background: -moz-linear-gradient(bottom, rgba(0, 0, 0, .6) 0%, transparent 100%);
+    background: -webkit-linear-gradient(bottom, rgba(0, 0, 0, .6) 0%, transparent 100%);
+    z-index: 4;
+}
+
+.mapset-header-corner {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    display: inline;
+    z-index: 5;
+}
+
+.mapset-header-corner-video {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    color: white;
+    transition: .2s ease-in-out;
+    background: rgba(0, 0, 0, .5);
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.mapset-header-corner-category {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    height: 30px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: .2s ease-in-out;
+    color: white;
+    background: rgba(0, 0, 0, .5);
+    border-radius: 15px;
+    padding: 7px 15px;
+    z-index: 3;
+}
+
+.mapset:hover>.mapset-header>.mapset-header-corner>.mapset-header-corner-category,
+.mapset:hover>.mapset-header>.mapset-header-corner>.mapset-header-corner-video {
+    opacity: 0;
+}
+
+.mapset-header-play {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    opacity: 0;
+    transition: .2s ease-in-out;
+    color: white;
+    z-index: 5;
+}
+
+.playing {
+    color: #ffff00;
+}
+
+.mapset:hover>.mapset-header>.mapset-header-play {
+    opacity: 1;
+    text-shadow: 0 0 10px black;
+}
+
+.mapset-header-play:hover {
+    transform: scale(1.01) rotate(-2deg);
+}
+
+.mapset-header-status {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    width: 100px;
+    height: 40px;
+    color: white;
+    font-size: 16px;
+    font-weight: 400;
+    z-index: 5;
+    text-align: right;
+    font-style: italic;
+    text-shadow: -2px -2px 5px black;
+}
+
+.mapset-header-status-plays {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.mapset-header-status-favourites {
+    position: absolute;
+    top: 19px;
+    right: 0;
+}
+
+.mapset-header-info {
+    position: absolute;
+    bottom: 5px;
+    left: 10px;
+    z-index: 5;
+    font-style: italic;
+}
+
+.mapset-header-info-title {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 400px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 4px black;
+}
+
+.mapset-header-info-artist {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 420px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 4px black;
+}
+
+.mapset-content {
+    position: absolute;
+    background: #fcfcfc;
+    top: 125px;
+    left: 0;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    width: 450px;
+    height: 90px;
+    z-index: 0;
+}
+
+.mapset-content-shadow {
+    position: absolute;
+    pointer-events: none;
+    width: 440px;
+    height: 1px;
+    left: 5px;
+    top: -1px;
+    z-index: 1;
+    box-shadow: 0 0 10px black, 0 0 10px black, 0 0 10px black, 0 0 10px black, 0 0 10px black, 0 0 10px black;
+} 
+
+.mapset-content-creator {
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.mapset-content-creator-highlight {
+    color: blue;
+    transition: .3s ease-in-out;
+}
+
+.mapset-content-creator-highlight:hover {
+    text-decoration: underline;
+}
+
+.mapset-content-source {
+    position: absolute;
+    top: 24px;
+    left: 10px;
+    font-size: 12.5px;
+    font-weight: bold;
+}
+
+.mapset-content-buttons {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: grey;
+    font-size: 19px;
+}
+
+.mapset-content-buttons>i {
+    margin: 0 2px;
+    transition: .25s ease-in-out;
+}
+
+.mapset-content-buttons>i:hover {
+    text-shadow: 0 0 1px black;
+}
+
+.heart-favourite {
+    color: #ff5349;
+}
+
+.mapset-content-diffs {
+    position: absolute;
+    bottom: 3px;
+    left: 10px;
+    width: 400px;
+    height: 30px;
+}
+
+.mapset-content-diff {
+    position: relative;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin: 0 3px;
+    border-radius: 50%;
+    font-family: FontAwesomeExtra;
+    color: white;
+    font-size: 20px;
+    text-align: justify;
+    padding: 0;
+    box-shadow: -1px 2px 4px black;
+}
+
+.diff-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.diff-icon {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+}
+
+.diff-normal>.diff-bg {
+    background: #6cf;
+}
+
+.diff-hard>.diff-bg {
+    background: #fc2;
+}
+
+.diff-insane>.diff-bg {
+    background: #f6a;
+}
+
+.diff-expert>.diff-bg {
+    background: #86e;
+}
+
+/* osu! Icons */
+
+@font-face {
+    font-family: FontAwesomeExtra;
+    src: url("../extra.ttf") format("truetype");
+}
+
+[class*=" fa-extra-"],[class^="fa-extra-"] {
+    font-family: FontAwesomeExtra;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    color: white;
+}
+
+.fa-extra-mode-osu:before {
+    content: "\E800";
+}
+
+.fa-extra-mode-fruits:before {
+    content: "\E801";
+}
+
+.fa-extra-mode-mania:before {
+    content: "\E802";
+}
+
+.fa-extra-mode-taiko:before {
+    content: "\E803";
+}
