@@ -1,0 +1,39 @@
+<div class="mapset" data-id="{id}">
+    <div class="mapset-header">
+        <img class="mapset-header-preview" src="https://assets.ppy.sh/beatmaps/{id}/covers/cover@2x.jpg">
+        <div class="mapset-header-preview-dim"></div>
+        <div class="mapset-header-play">
+            <i class="fas fa-play fa-3x"></i>
+        </div>
+        <div class="mapset-header-corner">
+            {video}
+            <div class="mapset-header-corner-category">
+                {status}
+            </div>
+        </div>
+        <div class="mapset-header-status">
+            <div class="mapset-header-status-plays">
+                {plays} <i class="fas fa-play-circle"></i>
+            </div>
+            <div class="mapset-header-status-favourites">
+                {favs} <i class="fas fa-heart"></i>
+            </div>
+        </div>
+        <div class="mapset-header-info">
+            <div class="mapset-header-info-title">{title}</div>
+            <div class="mapset-header-info-artist">{artist}</div>
+        </div>
+    </div>
+    <div class="mapset-content">
+        <div class="mapset-content-shadow"></div>
+        <div class="mapset-content-creator">mapped by <span class="mapset-content-creator-highlight">{creator}</span></div>
+        <div class="mapset-content-source">{source}</div>
+        <div class="mapset-content-buttons">
+            <i class="fas fa-heart{isFav}" mapset="{id}" data-toggle="tooltip" data-placement="bottom" title="Unfavourite"></i>
+            <i class="fas fa-download" mapset="{id}" data-toggle="tooltip" data-placement="bottom" title="Download"></i>
+        </div>
+        <div class="mapset-content-diffs">
+            {diffs}
+        </div>
+    </div>
+</div>
