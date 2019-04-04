@@ -16,7 +16,12 @@ git clone https://github.com/OctoDumb/osu-direct
 git checkout version2
 ```
 
-2. Run osu!direct
+2. Install dependencies
+```shell
+npm i
+```
+
+3. Run osu!direct
 ```shell
 npm start
 ```
