@@ -27,11 +27,14 @@
     position: absolute;
     top: 0;
     left: 0;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
     width: 450px;
     height: 125px;
     z-index: 3;
+}
+
+.mapset-header-preview-img {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
 }
 
 .mapset-header-preview-dim {
