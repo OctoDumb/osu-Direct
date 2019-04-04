@@ -2,11 +2,15 @@ const electron = require('electron');
 const { app, BrowserWindow, ipcMain: ipc } = electron;
 const userData = app.getPath('userData').split('\\').join('/');
 const fs = require('fs');
-if(!fs.existsSync(`${userData}/cookies.data`)) fs.writeFileSync(`${userData}/cookies.data`, "[]");
-var CookieStore = require('tough-cookie-filestore');
 const request = require('request').defaults({
-    jar: new CookieStore(`${userData}/cookies.data`)
+    jar: true,
+    headers: {
+        'User-Agent': 'osu!direct v2.0.0'
+    }
 });
+
+var user = fs.existsSync(`${userData}/login.data`) ? 
+    JSON.parse(fs.readFileSync(`${userData}/login.data`).toString()) : {};
 
 app.setAppUserModelId("octoDumb.osuDirect.Desktop"); // Dunno why but ok i'll leave it here
 
@@ -44,6 +48,24 @@ app.on('window-all-closed', () => {
 
 app.on('ready', createWindow);
 
+async function login() {
+    return new Promise(function(r,j) {
+        request.post({
+            url: 'https://osu.ppy.sh/forum/ucp.php?mode=login',
+            formData: {
+                login: "Login",
+                username: user.u,
+                password: user.p
+            }
+        }, function(err, res, body) {
+            if(err)
+                return r(false);
+            var incorrect = /You have specified an incorrect/i;
+            r(!incorrect.test(body));
+        });
+    });
+}
+
 /* IPC Section */
 
 ipc.on('mainWindowLoaded', (event) => {
@@ -53,17 +75,16 @@ ipc.on('mainWindowLoaded', (event) => {
     }
 });
 
-ipc.on('login', (event, args) => {
-    request.post({
-        url: 'https://osu.ppy.sh/forum/ucp.php?mode=login',
-        formData: {
-            login: "Login",
-            username: args.u,
-            password: args.p
-        }
-    }, function(err, res, body) {
-        fs.writeFileSync("./test.html", body);
-        var incorrect = /You have specified an incorrect/i;
-        event.returnValue = !incorrect.test(body);
-    });
+ipc.on('login', async (event, args) => {
+    user = {
+        u: args.u,
+        p: args.p
+    };
+    let logged = await login();
+    event.returnValue = logged;
+    if(!logged) return;
+    fs.writeFileSync(`${userData}/login.data`, JSON.stringify(user));
+    createWindow();
+    mainWindow.close();
+    mainWindow = null;
 });
