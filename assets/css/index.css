@@ -1,0 +1,105 @@
+body {
+    background: #222;
+    color: white;
+    overflow-x: hidden;
+}
+
+.bg {
+    z-index: -99;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background: url("../background.png");
+    background-repeat: repeat;
+    opacity: 0.03;
+}
+
+.header {
+    position: fixed;
+    background: #111;
+    height: 25px;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
+
+.header-drag {
+    position: absolute;
+    left: 0;
+    height: 25px;
+    width: calc(100vw - 100px);
+    -webkit-app-region: drag;
+}
+
+.header-name {
+    position: absolute;
+    left: 10px;
+    font-size: 15px;
+    font-weight: bolder;
+}
+
+.header-buttons {
+    position: absolute;
+    right: 0;
+    height: 25px;
+}
+
+.header-button {
+    width: 50px;
+    height: 25px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    transition: .1s ease-in-out;
+    z-index: 2;
+    color: white;
+    font-size: 16px;
+    font-weight: 100;
+    cursor: pointer;
+}
+
+.minimize:hover {
+    background: #555;
+    color: white;
+}
+
+.close:hover {
+    background: #d00;
+    color: white;
+}
+
+.container {
+    margin-top: 25px;
+}
+
+input[type=text],
+input[type=password] {
+    background: #222;
+    color: white;
+}
+
+input[type=text]:focus,
+input[type=password]:focus {
+    background: #222;
+    border: 1px white solid;
+    box-shadow: 0 0 5px white;
+    color: white;
+}
+
+.search-panel {
+    display: inline-flex;
+    justify-content: center;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.search-panel>* {
+    margin: 0 10px;
+}
+
+.search-entries {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
