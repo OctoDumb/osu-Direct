@@ -32,7 +32,7 @@
     z-index: 3;
 }
 
-.mapset-header-preview-img {
+.mapset-header-preview>img {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
 }
