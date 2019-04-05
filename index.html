@@ -17,82 +17,20 @@
                 <div class="header-button minimize">
                     <i class="fas fa-window-minimize"></i>
                 </div>
-                <div class="header-button close">
+                <div class="header-button cclose">
                     <i class="fas fa-times"></i>
                 </div>
             </div>
         </div>
         <div class="container">
+            <div class="toast-container" aria-live="polite" aria-atomic="true" style="position: fixed; top: 40px; right: 15px;; min-width: 300px; min-height: 200px;">
+                <div style="position: absolute; top: 0; right: 0;" id="toast-div"></div>
+            </div>
             <div class="search-panel">
                 Search: <input type="text" class="form-control search-input col-6">
                 <button type="button" class="btn btn-success search-send">Search</button>
             </div>
-            <div class="search-entries">
-                <div class="mapset">
-                    <div class="mapset-header">
-                        <div class="mapset-header-preview">
-                            <img style="height: 100%" src="https://assets.ppy.sh/beatmaps/921889/covers/cover@2x.jpg">
-                        </div>
-                        <!-- <div class="mapset-header-preview" style="background: url(&quot;https://assets.ppy.sh/beatmaps/921889/covers/cover.jpg&quot;)"></div> -->
-                        <!-- <img class="mapset-header-preview" src="https://assets.ppy.sh/beatmaps/921889/covers/cover@2x.jpg"> -->
-                        <div class="mapset-header-preview-dim"></div>
-                        <div class="mapset-header-play">
-                            <i class="fas fa-play fa-3x"></i>
-                        </div>
-                        <div class="mapset-header-corner">
-                            <div class="mapset-header-corner-video">
-                                <i class="fas fa-film"></i>
-                            </div>
-                            <div class="mapset-header-corner-category">
-                                Ranked
-                            </div>
-                        </div>
-                        <div class="mapset-header-status">
-                            <div class="mapset-header-status-plays">
-                                692 559 <i class="fas fa-play-circle"></i>
-                            </div>
-                            <div class="mapset-header-status-favourites">
-                                488 <i class="fas fa-heart"></i>
-                            </div>
-                        </div>
-                        <div class="mapset-header-info">
-                            <div class="mapset-header-info-title">Chikatto Chika Chika (TV Size)</div>
-                            <div class="mapset-header-info-artist">Fujiwara Chika (CV: Kohara Konomi)</div>
-                        </div>
-                    </div>
-                    <div class="mapset-content">
-                        <div class="mapset-content-shadow"></div>
-                        <div class="mapset-content-creator">mapped by <span class="mapset-content-creator-highlight">Lami</span></div>
-                        <div class="mapset-content-source">Kaguya-sama: Love is War</div>
-                        <div class="mapset-content-buttons">
-                            <i class="fas fa-heart heart-favourite" data-toggle="tooltip" data-placement="bottom" title="Unfavourite"></i>
-                            <i class="fas fa-download" data-toggle="tooltip" data-placement="bottom" title="Download"></i>
-                        </div>
-                        <div class="mapset-content-diffs">
-                            <div class="mapset-content-diff diff-normal" data-toggle="tooltip" data-placement="bottom" title="<b>Yuria's Normal</b><br>2.21">
-                                <div class="diff-bg"></div>
-                                <div class="diff-icon">&#xE800;</div>
-                            </div>
-                            <div class="mapset-content-diff diff-hard" data-toggle="tooltip" data-placement="bottom" title="<b>thzz's Hard</b><br>3.18">
-                                <div class="diff-bg"></div>
-                                <div class="diff-icon">&#xE800;</div>
-                            </div>
-                            <div class="mapset-content-diff diff-insane" data-toggle="tooltip" data-placement="bottom" title="<b>Little's Insame</b><br>4.64">
-                                <div class="diff-bg"></div>
-                                <div class="diff-icon">&#xE800;</div>
-                            </div>
-                            <div class="mapset-content-diff diff-expert" data-toggle="tooltip" data-placement="bottom" title="<b>Hazu's Expert</b><br>5.40">
-                                <div class="diff-bg"></div>
-                                <div class="diff-icon">&#xE800;</div>
-                            </div>
-                            <div class="mapset-content-diff diff-expert" data-toggle="tooltip" data-placement="bottom" title="<b>Chika</b><br>5.82">
-                                <div class="diff-bg"></div>
-                                <div class="diff-icon">&#xE800;</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="search-entries"></div>
         </div>
     </body>
 </html>

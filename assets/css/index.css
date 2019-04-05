@@ -21,6 +21,8 @@ body {
     width: 100%;
     top: 0;
     left: 0;
+    z-index: 99;
+    opacity: 0.95;
 }
 
 .header-drag {
@@ -63,9 +65,17 @@ body {
     color: white;
 }
 
-.close:hover {
+.cclose:hover {
     background: #d00;
     color: white;
+}
+
+.toast-container {
+    z-index: 98;
+}
+
+.toast {
+    color: black;
 }
 
 .container {
@@ -102,4 +112,20 @@ input[type=password]:focus {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+}
+
+
+/* Scroll bar */
+
+::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, .6);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: #ffffff60;
 }

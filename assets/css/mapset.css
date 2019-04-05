@@ -101,7 +101,7 @@
     opacity: 0;
     transition: .2s ease-in-out;
     color: white;
-    z-index: 5;
+    z-index: 6;
 }
 
 .playing {
@@ -283,6 +283,10 @@
     height: 20px;
 }
 
+.diff-easy>.diff-bg {
+    background: #88b300;
+}
+
 .diff-normal>.diff-bg {
     background: #6cf;
 }
@@ -297,6 +301,10 @@
 
 .diff-expert>.diff-bg {
     background: #86e;
+}
+
+.diff-extreme>.diff-bg {
+    background: #000;
 }
 
 /* osu! Icons */

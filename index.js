@@ -2,6 +2,7 @@ const electron = require('electron');
 const { app, BrowserWindow, ipcMain: ipc } = electron;
 const userData = app.getPath('userData').split('\\').join('/');
 const fs = require('fs');
+const querystring = require('querystring');
 const request = require('request').defaults({
     jar: true,
     headers: {
@@ -32,10 +33,15 @@ if(!singleLocked) {
 function createWindow() {
 	loadingWindow = new BrowserWindow({width: 300, height: 450, transparent: true, frame: false, icon: __dirname + '/icon.ico', resizable: false, fullscreenable: false, show: false});
     loadingWindow.loadFile('loading.html');
-    loadingWindow.on('ready-to-show', () => {
+    loadingWindow.on('ready-to-show', async () => {
         loadingWindow.show();
+        let logged = await login();
+        if(!logged) {
+            fs.unlinkSync(`${userData}/login.data`);
+        }
         mainWindow = new BrowserWindow({width: 800, height: 600, frame: false, icon: __dirname + '/icon.ico', show: false});
         mainWindow.loadFile(fs.existsSync(`${userData}/login.data`) ? 'index.html' : 'login.html');
+        // mainWindow.loadFile(fs.existsSync(`${userData}/login.data`) ? fs.existsSync(`${userData}/settings.data`) ? 'index.html' : 'setup.html' : 'login.html');
         mainWindow.on('ready-to-show', () => {
             mainWindow.show();
         });
@@ -66,6 +72,17 @@ async function login() {
     });
 }
 
+async function req(url) {
+    return new Promise(function(r,j) {
+        request.get(url, function(err, res, body) {
+            if(err)
+                j(err);
+            else
+                r(body);
+        });
+    });
+}
+
 /* IPC Section */
 
 ipc.on('mainWindowLoaded', (event) => {
@@ -87,4 +104,29 @@ ipc.on('login', async (event, args) => {
     createWindow();
     mainWindow.close();
     mainWindow = null;
+});
+
+ipc.on('setup', async (event, args) => {
+    //
+    fs.writeFileSync(`${userData}/settings.data`, JSON.stringify(args));
+    createWindow();
+    mainWindow.close();
+    mainWindow = null;
+});
+
+ipc.on('search', async (event, args) => {
+    try {
+        let q = await req(`https://osu.ppy.sh/beatmapsets/search?${querystring.stringify(args[0])}`);
+        event.sender.send('search-result', {done: true, object: JSON.parse(q), next: args[1]});
+    } catch(e) {
+        event.sender.send('search-result', {done: false, object: e.toString()});
+    }
+});
+
+ipc.on('fav', (event, args) => {
+    event.sender.send('err', 'Favouriting is not implemented yet');
+});
+
+ipc.on('dl', (event, args) => {
+    event.sender.send('err', 'Downloading is not implemented yet');
 });

@@ -24,7 +24,7 @@ $(document).ready(function() {
         if(logged) {
             $(".status").html('<div class="alert alert-success" role="alert">Successfully logged in!</div>');
         } else {
-            $(".status").html('<div class="alert alert-danger" role="alert">You have provided incorrect data! Check yourself and try again!</div>');
+            $(".status").html('<div class="alert alert-danger" role="alert">An error occured! Check your data and try again!</div>');
         }
     });
 });
