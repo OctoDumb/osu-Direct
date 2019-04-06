@@ -1,0 +1,71 @@
+<html>
+    <head>
+        <title>osu!Direct - Last Steps</title>
+        <link rel="stylesheet" href="assets/FontAwesome/css/all.min.css">
+        <link rel="stylesheet" href="assets/css/bootstrap.css">
+        <link rel="stylesheet" href="assets/css/setup.css">
+        <script src="assets/js/setup.js"></script>
+    </head>
+    <body>
+        <div class="bg"></div>
+        <div class="header">
+            <div class="header-drag">
+                <span class="header-name">osu!Direct v2.0.0</span>
+            </div>
+            <div class="header-buttons">
+                <div class="header-button minimize">
+                    <i class="fas fa-window-minimize"></i>
+                </div>
+                <div class="header-button cclose">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+        </div>
+        <div id="token-modal" class="modal fade" tabindex="-1" role="dialog" style="color: black;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Token</h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            &times;
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h5>Features that need a token:</h5>
+                        <ul class="list-group">
+                            <li class="list-group-item list-group-item-action">Ranking</li>
+                            <li class="list-group-item list-group-item-action">Friends Ranking (limited)</li>
+                            <li class="list-group-item list-group-item-action">Any more..?</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            You're almost ready to go.<br>
+            Set up these to start using <b>osu!Direct</b><br>
+            <form>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="songs-folder">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-light" id="songs-folder-btn">
+                            Browse
+                        </button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text" style="background: #222; color: white;">
+                            <input type="checkbox" id="use-token-cb"> Use token
+                        </div>
+                    </div>
+                    <input type="password" class="form-control" id="token" disabled="disabled" aria-describedby="token-help">
+                </div>
+                <small class="form-text" id="token-help">Why do I need token?</small>
+            </form>
+            <button id="setup-btn" class="btn btn-success">
+                Start!
+            </button>
+        </div>
+    </body>
+</html>

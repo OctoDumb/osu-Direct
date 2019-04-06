@@ -1,5 +1,5 @@
 const electron = require('electron');
-const { app, BrowserWindow, ipcMain: ipc } = electron;
+const { app, BrowserWindow, ipcMain: ipc, Tray } = electron;
 const userData = app.getPath('userData').split('\\').join('/');
 const fs = require('fs');
 const querystring = require('querystring');
@@ -15,7 +15,18 @@ var user = fs.existsSync(`${userData}/login.data`) ?
 
 app.setAppUserModelId("octoDumb.osuDirect.Desktop"); // Dunno why but ok i'll leave it here
 
-let mainWindow, loadingWindow;
+/**
+ * @type {BrowserWindow}
+ */
+let mainWindow;
+/**
+ * @type {BrowserWindow}
+ */
+let loadingWindow;
+/**
+ * @type {Tray}
+ */
+let tray;
 
 const singleLocked = app.requestSingleInstanceLock();
 
@@ -40,8 +51,7 @@ function createWindow() {
             fs.unlinkSync(`${userData}/login.data`);
         }
         mainWindow = new BrowserWindow({width: 800, height: 600, frame: false, icon: __dirname + '/icon.ico', show: false});
-        mainWindow.loadFile(fs.existsSync(`${userData}/login.data`) ? 'index.html' : 'login.html');
-        // mainWindow.loadFile(fs.existsSync(`${userData}/login.data`) ? fs.existsSync(`${userData}/settings.data`) ? 'index.html' : 'setup.html' : 'login.html');
+        mainWindow.loadFile(fs.existsSync(`${userData}/login.data`) ? fs.existsSync(`${userData}/settings.data`) ? 'index.html' : 'setup.html' : 'login.html');
         mainWindow.on('ready-to-show', () => {
             mainWindow.show();
         });
@@ -85,11 +95,26 @@ async function req(url) {
 
 /* IPC Section */
 
-ipc.on('mainWindowLoaded', (event) => {
+ipc.on('mainWindowLoaded', () => {
     if(loadingWindow) {
         loadingWindow.close();
         loadingWindow = null;
     }
+});
+
+ipc.on('tray', () => {
+    mainWindow.hide();
+    tray = new Tray(__dirname + "/icon.ico");
+    tray.displayBalloon({
+        title: "osu!Direct is now hidden",
+        content: "To open it again, click on its icon in tray",
+        silent: true
+    });
+    tray.setToolTip("Click to open osu!Direct");
+    tray.on('click', () => {
+        mainWindow.show();
+        tray.destroy();
+    });
 });
 
 ipc.on('login', async (event, args) => {
@@ -107,11 +132,25 @@ ipc.on('login', async (event, args) => {
 });
 
 ipc.on('setup', async (event, args) => {
-    //
+    if(args.useToken) {
+        let tokenRegExp = /[^0-9a-f]/;
+        if(tokenRegExp.test(args.token) | args.token.length != 40)
+            return event.sender.send('setup-err', "Incorrect token");
+        let checkToken = JSON.parse(await req(`https://osu.ppy.sh/api/get_user?u=${user.u}&k=${args.token}`));
+        if(checkToken.error)
+            return event.sender.send('setup-err', "Incorrect token");
+    }
+    if(!fs.existsSync(`${args.osu}/Songs`))
+        return event.sender.send('setup-err', "Invalid osu! folder");
     fs.writeFileSync(`${userData}/settings.data`, JSON.stringify(args));
     createWindow();
     mainWindow.close();
     mainWindow = null;
+    // let checkToken = await req(`https://osu.ppy.sh/api/get_user?u=${user.u}&k=${args.token}`);
+    // fs.writeFileSync(`${userData}/settings.data`, JSON.stringify(args));
+    // createWindow();
+    // mainWindow.close();
+    // mainWindow = null;
 });
 
 ipc.on('search', async (event, args) => {

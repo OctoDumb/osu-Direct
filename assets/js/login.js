@@ -10,10 +10,10 @@ $(document).ready(function() {
     });
 
     $(".minimize").click(function() {
-        remote.getCurrentWindow().minimize();
+        ipc.send('tray');
     });
 
-    $(".close").click(function() {
+    $(".cclose").click(function() {
         remote.getCurrentWindow().close();
     });
 

@@ -66,12 +66,12 @@ $(document).ready(function() {
     
     search({}, false);
 
-    $(".close").click(function() {
+    $(".cclose").click(function() {
         remote.getCurrentWindow().close();
     });
 
     $(".minimize").click(function() {
-        remote.getCurrentWindow().minimize();
+        ipc.send('tray');
     });
 
     $('[data-toggle="tooltip"]').tooltip({html: true});
