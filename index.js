@@ -146,11 +146,6 @@ ipc.on('setup', async (event, args) => {
     createWindow();
     mainWindow.close();
     mainWindow = null;
-    // let checkToken = await req(`https://osu.ppy.sh/api/get_user?u=${user.u}&k=${args.token}`);
-    // fs.writeFileSync(`${userData}/settings.data`, JSON.stringify(args));
-    // createWindow();
-    // mainWindow.close();
-    // mainWindow = null;
 });
 
 ipc.on('search', async (event, args) => {
