@@ -159,6 +159,7 @@
     width: 400px;
     text-overflow: ellipsis;
     overflow: hidden;
+    white-space: nowrap;
     font-size: 20px;
     font-weight: bold;
     color: white;
@@ -172,6 +173,7 @@
     width: 420px;
     text-overflow: ellipsis;
     overflow: hidden;
+    white-space: nowrap;
     font-size: 15px;
     font-weight: bold;
     color: white;
@@ -240,6 +242,22 @@
 
 .heart-favourite {
     color: #ff5349;
+}
+
+.heart-pulse {
+    animation: heartPulse 1.5s infinite;
+}
+
+@keyframes heartPulse {
+    0% {
+        color: grey;
+    }
+    50% {
+        color: #ff5349
+    }
+    100% {
+        color: grey;
+    }
 }
 
 .mapset-content-diffs {

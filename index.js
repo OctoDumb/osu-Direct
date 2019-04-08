@@ -9,9 +9,13 @@ const request = require('request').defaults({
         'User-Agent': 'osu!direct v2.0.0'
     }
 });
+const progress = require('request-progress');
 
 var user = fs.existsSync(`${userData}/login.data`) ? 
     JSON.parse(fs.readFileSync(`${userData}/login.data`).toString()) : {};
+
+var settings = fs.existsSync(`${userData}/settings.data`) ?
+    JSON.parse(fs.readFileSync(`${userData}/settings.data`).toString()) : {};
 
 app.setAppUserModelId("octoDumb.osuDirect.Desktop"); // Dunno why but ok i'll leave it here
 
@@ -50,6 +54,16 @@ function createWindow() {
         if(!logged) {
             fs.unlinkSync(`${userData}/login.data`);
         }
+        if(settings.osu) {
+            if(!fs.existsSync(`${settings.osu}/DirectTemp`)) {
+                fs.mkdirSync(`${settings.osu}/DirectTemp`);
+            } else {
+                fs.readdirSync(`${settings.osu}/DirectTemp`).forEach(file => {
+                    if(file.endsWith(".osz"))
+                        fs.unlinkSync(`${settings.osu}/DirectTemp/${file}`);
+                });
+            }
+        }
         mainWindow = new BrowserWindow({width: 800, height: 600, frame: false, icon: __dirname + '/icon.ico', show: false});
         mainWindow.loadFile(fs.existsSync(`${userData}/login.data`) ? fs.existsSync(`${userData}/settings.data`) ? 'index.html' : 'setup.html' : 'login.html');
         mainWindow.on('ready-to-show', () => {
@@ -78,6 +92,10 @@ async function login() {
                 return r(false);
             var incorrect = /You have specified an incorrect/i;
             r(!incorrect.test(body));
+            if(!incorrect.test(body)) {
+                user.check = body.split("localUserCheck = \"")[1].split("\";")[0];
+                user.id = body.split("localUserId = ")[1].split(";")[0];
+            }
         });
     });
 }
@@ -91,6 +109,89 @@ async function req(url) {
                 r(body);
         });
     });
+}
+
+/* Functionality */
+
+Array.prototype.indexObj = function(param, value) {let r = -1;let d = false;this.forEach((a,i) => {if(d)return;if(a[param] == value){r=i;d=!d;}});return r;};
+
+var downloadQueue = [];
+
+function download(object, windowIpc) {
+    let q = downloadQueue.indexObj("id", object.id);
+    if(q == -1) {
+        windowIpc.send('toast', {type: 'i', message: `Downloading ${object.artist} - ${object.title}`});
+        windowIpc.send('addQueue', object);
+        q = downloadQueue.length;
+        downloadQueue.push(object);
+    } else
+        return windowIpc.send('toast', {type: 'e', message: `Already downloading ${object.artist} - ${object.title}`});
+    if(q < 2) {
+        var fileregexp = /[^0-9A-Za-z!@#$%^&()_+=[\]'. -]/g;
+
+        var dl = progress(request.get({
+            url: `https://osu.ppy.sh/d/${object.id}n`,
+            timeout: 10000
+        }), {
+            throttle: 500
+        }).on('progress', state => {
+            windowIpc.send('updQueue', {id: object.id, p: `${Math.round(state.percent*100)}%`});
+        });
+
+        dl.on('error', (err) => {
+            if(err.code == 'ETIMEDOUT') {
+                windowIpc.send('toast', {type: 'e', message: `${object.artist} - ${object.title} timed out! Skipping..`, title: "Timed out"});
+            } else {
+                windowIpc.send('toast', {type: 'e', message: `Failed to download ${object.artist} - ${object.title}`});
+            }
+            windowIpc.send('delQueue', object.id);
+            q = downloadQueue.indexObj("id", object.id);
+            downloadQueue.splice(q, 1);
+            if(downloadQueue.length > 1)
+                download(downloadQueue[1], windowIpc);
+        });
+
+        dl.on('response', (res) => {
+            if(res.headers['content-type'] == 'application/download') {
+                let filename = res.headers['content-disposition'].split("filename=")[1].split('"')[1].replace(fileregexp, '');
+                progress(dl, {
+                    throttle: 500
+                }).on('progress', (state) => {
+                    windowIpc.send('updQueue', {id: object.id, p: `${Math.round(state.percent*100)}%`});
+                });
+                let ws = dl.pipe(fs.createWriteStream(`${settings.osu}/DirectTemp/${filename}`));
+                dl.on('end', () => {
+                    ws.end();
+                    fs.renameSync(`${settings.osu}/DirectTemp/${filename}`, `${settings.osu}/Songs/${filename}`);
+                    windowIpc.send('toast', {type: 's', message: `Downloaded ${object.artist} - ${object.title}`});
+                    windowIpc.send('delQueue', object.id);
+                    q = downloadQueue.indexObj("id", object.id);
+                    downloadQueue.splice(q, 1);
+                    if(downloadQueue.length > 1)
+                        download(downloadQueue[1], windowIpc);
+                });
+            } else {
+                windowIpc.send('toast', {type: 'e', message: `${object.artist} - ${object.title} doesn't exists`});
+                windowIpc.send('delQueue', object.id);
+                q = downloadQueue.indexObj("id", object.id);
+                downloadQueue.splice(q, 1);
+                if(downloadQueue.length > 1)
+                    download(downloadQueue[1], windowIpc);
+            }
+        });
+    }
+}
+
+async function favourite(object, windowIpc) {
+    if(!object.s) {
+        await req(`https://osu.ppy.sh/web/favourite.php?localUserCheck=${user.check}&a=${object.id}`);
+        windowIpc.send('setFav', {id: object.id, f: !object.s});
+        windowIpc.send('toast', {type: 'i', message: `Favourited ${object.artist} - ${object.title}`});
+    } else {
+        await req(`https://osu.ppy.sh/web/favourite.php?localUserCheck=${user.check}&d=${object.id}`);
+        windowIpc.send('setFav', {id: object.id, f: !object.s});
+        windowIpc.send('toast', {type: 'i', message: `Unfavourited ${object.artist} - ${object.title}`});
+    }
 }
 
 /* IPC Section */
@@ -143,24 +244,29 @@ ipc.on('setup', async (event, args) => {
     if(!fs.existsSync(`${args.osu}/Songs`))
         return event.sender.send('setup-err', "Invalid osu! folder");
     fs.writeFileSync(`${userData}/settings.data`, JSON.stringify(args));
+    fs.mkdirSync(`${args.osu}/DirectTemp`);
     createWindow();
     mainWindow.close();
     mainWindow = null;
 });
 
 ipc.on('search', async (event, args) => {
+    windowIpc = event.sender;
     try {
         let q = await req(`https://osu.ppy.sh/beatmapsets/search?${querystring.stringify(args[0])}`);
         event.sender.send('search-result', {done: true, object: JSON.parse(q), next: args[1]});
+        ipc.emit('toast', {type: ''});
     } catch(e) {
         event.sender.send('search-result', {done: false, object: e.toString()});
     }
 });
 
 ipc.on('fav', (event, args) => {
-    event.sender.send('err', 'Favouriting is not implemented yet');
+    favourite(args, event.sender);
+    // event.sender.send('toast', {type: 'e', message: 'Favouriting is not implemented yet'});
 });
 
 ipc.on('dl', (event, args) => {
-    event.sender.send('err', 'Downloading is not implemented yet');
+    download(args, event.sender);
+    // event.sender.send('toast', {type: 'e', message: 'Downloading is not implemented yet'});
 });

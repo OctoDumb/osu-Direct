@@ -4,13 +4,14 @@ var fs = require('fs');
 var $ = require('jquery');
 require('bootstrap');
 
-var shownMapsets = [];
+var shownMapsets = {};
 
 var items = {
     difficulty: fs.readFileSync("./assets/items/diff.html").toString(),
     mapset: fs.readFileSync("./assets/items/mapset.html").toString(),
     video: fs.readFileSync("./assets/items/video.html").toString(),
-    toast: fs.readFileSync("./assets/items/toast.html").toString()
+    toast: fs.readFileSync("./assets/items/toast.html").toString(),
+    queue: fs.readFileSync("./assets/items/queue.html").toString()
 };
 
 String.prototype.rpl = function(obj) {
@@ -84,19 +85,22 @@ $(document).ready(function() {
     });
 });
 
-function toast(type, message) {
-    if(type == 'e') {
-        let toast = items.toast
-            .rpl({
-                title: "Error",
-                text: message
-            });
-        $(toast).appendTo("#toast-div").toast('show').on('hidden.bs.toast', function() {
-            this.parentNode.removeChild(this);
+const toasts = {
+    'e': ['#d00', 'Error'],
+    'i': ['#00d', 'Info'],
+    's': ['#0f0', 'Success']
+};
+
+function toast(type, message, title) {
+    let toast = items.toast
+        .rpl({
+            color: toasts[type][0],
+            title: title ? title : toasts[type][1],
+            text: message
         });
-    } else {
-        // Nothing
-    }
+    $(toast).appendTo("#toast-div").toast('show').on('hidden.bs.toast', function() {
+        this.parentNode.removeChild(this);
+    });
 }
 
 /* Requesting */
@@ -108,13 +112,18 @@ function search(opts, n) {
 
 /* Processing */
 
-ipc.on('search-result', function(event, args) {
+ipc.on('search-result', (event, args) => {
     if(!args.done)
         return;
-    if(!args.next)
+    if(!args.next) {
         $(".search-entries").html("");
+        shownMapsets = {};
+    }
     args.object.beatmapsets.forEach((set) => {
-        shownMapsets.push(set.id);
+        shownMapsets[set.id] = {
+            title: set.title,
+            artist: set.artist
+        };
         let diffs = [];
         set.beatmaps.sort(sortDiffs).forEach(diff => {
             diffs.push(items.difficulty.rpl({
@@ -145,18 +154,54 @@ ipc.on('search-result', function(event, args) {
     });
     $('[data-toggle="tooltip"]').tooltip({html: true});
     $('.fav').click(function() {
+        if($(this).hasClass('heart-pulse'))
+            return;
         let id = $(this).attr("mapset");
-        ipc.send('fav', id);
+        let s = $(this).hasClass('heart-favourite');
+        $(this).addClass('heart-pulse');
+        if($(this).hasClass('heart-favourite'))
+            $(this).removeClass('heart-favourite');
+        ipc.send('fav', {id: id, s: s, artist: shownMapsets[id].artist, title: shownMapsets[id].title});
     });
     $('.play-prev').click(function() {
         toast('e', "Previews are not implemented");
     });
     $('.dl').click(function() {
         let id = $(this).attr("mapset");
-        ipc.send('dl', id);
+        ipc.send('dl', {id: id, artist: shownMapsets[id].artist, title: shownMapsets[id].title});
     });
 });
 
-ipc.on('err', (event, err) => {
-    toast('e', err);
+ipc.on('toast', (event, args) => {
+    toast(args.type, args.message, args.title);
+});
+
+ipc.on('addQueue', (event, args) => {
+    let q = items.queue
+        .rpl({
+            id: args.id,
+            title: args.title.split('"').join("&quot;")
+        });
+    $(q).appendTo(".queue");
+});
+
+ipc.on('updQueue', (event, args) => {
+    $(`#q-pr-${args.id}`).css("width", args.p);
+    $(`#q-pc-${args.id}`).text(args.p);
+});
+
+ipc.on('delQueue', (event, args) => {
+    console.log(args);
+    $(`#q-${args}`).remove();
+});
+
+ipc.on('setFav', (event, args) => {
+    let h = $(`#f-${args.id}`);
+    if(!h) return;
+    if(h.hasClass('heart-pulse'))
+        h.removeClass('heart-pulse');
+    if(h.hasClass('heart-favourite'))
+        h.removeClass('heart-favourite');
+    if(args.f)
+        h.addClass('heart-favourite');
 });

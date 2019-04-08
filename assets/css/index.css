@@ -22,7 +22,7 @@ body {
     top: 0;
     left: 0;
     z-index: 99;
-    opacity: 0.95;
+    opacity: 0.98;
 }
 
 .header-drag {
@@ -76,6 +76,57 @@ body {
 
 .toast {
     color: black;
+}
+
+.queue {
+    position: fixed;
+    height: 80vh;
+    top: 10vh;
+    width: 300px;
+    left: -270px;
+    background: rgba(0,0,0,.7);
+    border-radius: 5px;
+    transition: .5s ease-in-out;
+    z-index: 10;
+}
+
+.queue:hover {
+    left: -10px;
+}
+
+.queue-dl {
+    position: relative;
+    display: block;
+    width: 250px;
+    margin-left: 10px;
+}
+
+.queue-title {
+    width: 200px;
+    font-size: 17px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.queue-progress {
+    width: 150px;
+    height: 10px;
+    border-radius: 5px;
+    background: #fff4;
+}
+
+.queue-progress-inner {
+    height: 10px;
+    border-radius: 5px;
+    background: #0c0;
+    transition: .3s ease-in-out;
+}
+
+.queue-percentage {
+    position: absolute;
+    right: 10px;
+    top: 5px;
 }
 
 .container {
