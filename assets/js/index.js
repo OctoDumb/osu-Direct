@@ -62,26 +62,63 @@ function modeIcon(mode) {
     return "&#xE800";
 }
 
+function d(num) {
+    if(num < 100)
+        return `${num<10?'00':'0'}${num}`;
+    else
+        return `${num}`;
+}
+
+function div(num, d) {
+    return Math.floor(num/d);
+}
+
+/**
+ * 
+ * @param {Number} num
+ * 
+ * @returns {String} 
+ */
+function formatNum(num) {
+    if(num < 1000)
+        return String(num);
+    else {
+        if(num < 1000000) {
+            return `${div(num,1000)} ${d(num%1000)}`;
+        } else {
+            return `${div(num,1000000)} ${d(div(num,1000000)%1000)} ${d(num%1000)}`;
+        }
+    }
+}
+
 $(document).ready(function() {
     ipc.send('mainWindowLoaded', true);
     
     search({}, false);
 
-    $(".cclose").click(function() {
+    $(".cclose").click(() => {
         remote.getCurrentWindow().close();
     });
 
-    $(".minimize").click(function() {
+    $(".minimize").click(() => {
         ipc.send('tray');
     });
 
     $('[data-toggle="tooltip"]').tooltip({html: true});
 
-    $('.search-send').click(function() {
+    $('.search-send').click(() => {
         let query = {
-            q: $('.search-input').val()
+            q: $('.search-input').val(),
+            s: $('.search-category').val() == "-1" ? null : $('.search-category').val()
         };
         search(query, false);
+    });
+
+    /* Mapset window */
+
+    $('.window-close').click(() => {
+        $('.mapset-window').css('transition', '1s ease-in-out').css('top', '100vh');
+        setTimeout(() => {$('.mapset-window').css('display', 'none');}, 1000);
     });
 });
 
@@ -124,32 +161,72 @@ ipc.on('search-result', (event, args) => {
             title: set.title,
             artist: set.artist
         };
-        let diffs = [];
-        set.beatmaps.sort(sortDiffs).forEach(diff => {
-            diffs.push(items.difficulty.rpl({
-                diff: diffName(diff.difficulty_rating),
-                tooltipInfo: `<b>${diff.version.split('"').join("&quot;")}</b><br>${diff.difficulty_rating.roundTo(2)}`,
-                icon: modeIcon(diff.mode_int)
-            }));
-        });
+        let diffs;
+        if(set.beatmaps.length > 15) {
+            diffs = "";
+            let h = {};
+            let c = {};
+            set.beatmaps.forEach(diff => {
+                if(!h[diff.mode_int])
+                    h[diff.mode_int] = diff;
+                else if(h[diff.mode_int].difficulty_rating < diff.difficulty_rating)
+                    h[diff.mode_int] = diff;
+                if(!c[diff.mode_int])
+                    c[diff.mode_int] = 0;
+                c[diff.mode_int]++;
+            });
+            for(var m in h) {
+                diffs += items.difficulty.rpl({
+                    diff: diffName(h[m].difficulty_rating),
+                    tooltipInfo: `<b>${h[m].version.split('"').join("&quot;")}</b><br>${h[m].difficulty_rating.roundTo(2)}`,
+                    icon: modeIcon(h[m].mode_int)
+                });
+                diffs += c[m];
+            }
+        } else {
+            diffs = [];
+            set.beatmaps.sort(sortDiffs).forEach(diff => {
+                diffs.push(items.difficulty.rpl({
+                    diff: diffName(diff.difficulty_rating),
+                    tooltipInfo: `<b>${diff.version.split('"').join("&quot;")}</b><br>${diff.difficulty_rating.roundTo(2)}`,
+                    icon: modeIcon(diff.mode_int)
+                }));
+            });
+            diffs = diffs.join("");
+        }
         let mapset = items.mapset
             .rpl({
                 id: String(set.id),
                 video: set.video ? items.video : "",
                 status: set.status,
-                plays: String(set.play_count),
-                favs: String(set.favourite_count),
+                // plays: String(set.play_count),
+                plays: formatNum(set.play_count),
+                favs: formatNum(set.favourite_count),
                 title: set.title,
                 artist: set.artist,
                 creator: set.creator,
                 source: set.source,
                 isFav: set.has_favourited ? " heart-favourite" : "",
                 favStatus: set.has_favourited ? "Unfavourite": "Favourite",
-                diffs: diffs.join("")
+                diffs: diffs
             });
         $(".search-entries").append(mapset);
     });
-    $('img').on('error', function() {
+    $('.mapset-header-preview-dim').click(function() {
+        let id = $(this).attr('data-id');
+        $('.mapset-window').css('display', 'block');
+        setTimeout(()=>{$('.mapset-window').css('top', '0');}, 50);
+        setTimeout(()=>{$('.mapset-window').css('transition', 'none');}, 1050);
+        $('.window-header').css('background-image', `linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)),url("assets/default-bg.png")`);
+        $('<img/>').attr('src', `https://assets.ppy.sh/beatmaps/${id}/covers/cover@2x.jpg`).on('load', function() {
+            $(this).remove();
+            $('.window-header').css('background-image', `linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)),url("https://assets.ppy.sh/beatmaps/${id}/covers/cover@2x.jpg")`);
+        }).on('error', function() {
+            $(this).ready();
+            $('.window-header').css('background-image', `linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)),url("assets/default-bg.png")`);
+        });
+    });
+    $('img.mapset-prev-img').on('error', function() {
         $(this).replaceWith('<img style="width: 100%;" src="assets/default-bg.png">');
     });
     $('[data-toggle="tooltip"]').tooltip({html: true});

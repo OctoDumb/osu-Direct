@@ -6,7 +6,6 @@
     width: 450px;
     height: 215px;
     transition: .2s ease-in-out;
-    cursor: pointer;
     pointer-events: all;
 }
 
@@ -50,6 +49,7 @@
     background: -moz-linear-gradient(bottom, rgba(0, 0, 0, .6) 0%, transparent 100%);
     background: -webkit-linear-gradient(bottom, rgba(0, 0, 0, .6) 0%, transparent 100%);
     z-index: 4;
+    cursor: pointer;
 }
 
 .mapset-header-corner {
@@ -71,6 +71,7 @@
     background: rgba(0, 0, 0, .5);
     border-radius: 50%;
     margin-right: 5px;
+    pointer-events: none;
 }
 
 .mapset-header-corner-category {
@@ -87,6 +88,7 @@
     border-radius: 15px;
     padding: 7px 15px;
     z-index: 3;
+    pointer-events: none;
 }
 
 .mapset:hover>.mapset-header>.mapset-header-corner>.mapset-header-corner-category,
@@ -102,6 +104,7 @@
     transition: .2s ease-in-out;
     color: white;
     z-index: 6;
+    cursor: pointer;
 }
 
 .playing {
@@ -121,7 +124,7 @@
     position: absolute;
     top: 10px;
     right: 15px;
-    width: 100px;
+    width: 140px;
     height: 40px;
     color: white;
     font-size: 16px;
@@ -229,11 +232,13 @@
     right: 10px;
     color: grey;
     font-size: 19px;
+    user-select: none;
 }
 
 .mapset-content-buttons>i {
     margin: 0 2px;
     transition: .25s ease-in-out;
+    cursor: pointer;
 }
 
 .mapset-content-buttons>i:hover {
@@ -266,6 +271,7 @@
     left: 10px;
     width: 400px;
     height: 30px;
+    user-select: none;
 }
 
 .mapset-content-diff {

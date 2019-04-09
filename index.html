@@ -5,6 +5,7 @@
         <link rel="stylesheet" href="assets/css/bootstrap.css">
         <link rel="stylesheet" href="assets/css/index.css">
         <link rel="stylesheet" href="assets/css/mapset.css">
+        <link rel="stylesheet" href="assets/css/mapsetWindow.css">
         <script src="assets/js/index.js"></script>
     </head>
     <body>
@@ -25,14 +26,31 @@
         <div class="queue">
         </div>
         <div class="container">
-            <div class="toast-container" aria-live="polite" aria-atomic="true" style="position: fixed; top: 40px; right: 15px;; min-width: 300px; min-height: 200px; pointer-events: none;">
+            <div class="toast-container" aria-live="polite" aria-atomic="true" style="position: fixed; top: 40px; right: 15px; min-width: 300px; min-height: 200px; pointer-events: none;">
                 <div style="position: absolute; top: 0; right: 0;" id="toast-div"></div>
             </div>
             <div class="search-panel">
                 Search: <input type="text" class="form-control search-input col-6">
+                Category: <select class="form-control search-category col-2">
+                    <option value="-1">Any</option>
+                    <option value="0" selected>Ranked</option>
+                    <option value="8">Loved</option>
+                    <!-- <option value="2">Favourites</option> -->
+                    <option value="3">Qualified</option>
+                    <option value="4">Pending</option>
+                    <option value="5">Graveyard</option>
+                    <option value="6">My maps</option>
+                </select>
                 <button type="button" class="btn btn-success search-send">Search</button>
             </div>
             <div class="search-entries"></div>
+        </div>
+        <div class="mapset-window" style="display:none;top:100vh;">
+            <div class="window-close">&times;</div>
+            <div class="window-header">
+                <div class="window-title"></div>
+                <div class="window-artist"></div>
+            </div>
         </div>
     </body>
 </html>
