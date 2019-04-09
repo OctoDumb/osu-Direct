@@ -157,10 +157,7 @@ ipc.on('search-result', (event, args) => {
         shownMapsets = {};
     }
     args.object.beatmapsets.forEach((set) => {
-        shownMapsets[set.id] = {
-            title: set.title,
-            artist: set.artist
-        };
+        shownMapsets[set.id] = set;
         let diffs;
         if(set.beatmaps.length > 15) {
             diffs = "";
@@ -199,7 +196,6 @@ ipc.on('search-result', (event, args) => {
                 id: String(set.id),
                 video: set.video ? items.video : "",
                 status: set.status,
-                // plays: String(set.play_count),
                 plays: formatNum(set.play_count),
                 favs: formatNum(set.favourite_count),
                 title: set.title,
@@ -214,6 +210,11 @@ ipc.on('search-result', (event, args) => {
     });
     $('.mapset-header-preview-dim').click(function() {
         let id = $(this).attr('data-id');
+        let set = shownMapsets[id];
+        $('.window-title').text(set.title);
+        $('.window-artist').text(set.artist);
+        $('.window-creator-avatar').attr('src', `https://a.ppy.sh/${set.user_id}?1.jpeg`);
+        $('.window-creator-name').text(set.creator);
         $('.mapset-window').css('display', 'block');
         setTimeout(()=>{$('.mapset-window').css('top', '0');}, 50);
         setTimeout(()=>{$('.mapset-window').css('transition', 'none');}, 1050);

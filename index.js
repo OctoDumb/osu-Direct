@@ -50,9 +50,11 @@ function createWindow() {
     loadingWindow.loadFile('loading.html');
     loadingWindow.on('ready-to-show', async () => {
         loadingWindow.show();
-        let logged = await login();
-        if(!logged) {
-            fs.unlinkSync(`${userData}/login.data`);
+        if(fs.existsSync(`${userData}/login.data`)) {
+            let logged = await login();
+            if(!logged) {
+                fs.unlinkSync(`${userData}/login.data`);
+            }
         }
         if(settings.osu) {
             if(!fs.existsSync(`${settings.osu}/DirectTemp`)) {
@@ -219,10 +221,9 @@ ipc.on('tray', () => {
 });
 
 ipc.on('login', async (event, args) => {
-    user = {
-        u: args.u,
-        p: args.p
-    };
+    console.log(args);
+    user.u = args.u;
+    user.p = args.p;
     let logged = await login();
     event.returnValue = logged;
     if(!logged) return;
@@ -243,8 +244,9 @@ ipc.on('setup', async (event, args) => {
     }
     if(!fs.existsSync(`${args.osu}/Songs`))
         return event.sender.send('setup-err', "Invalid osu! folder");
+    settings = Object.assign(settings, args);
     fs.writeFileSync(`${userData}/settings.data`, JSON.stringify(args));
-    fs.mkdirSync(`${args.osu}/DirectTemp`);
+    if(!fs.existsSync(`${args.osu}/DirectTemp`)) fs.mkdirSync(`${args.osu}/DirectTemp`);
     createWindow();
     mainWindow.close();
     mainWindow = null;

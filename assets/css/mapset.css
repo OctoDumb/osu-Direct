@@ -133,6 +133,7 @@
     text-align: right;
     font-style: italic;
     text-shadow: -2px -2px 5px black;
+    pointer-events: none;
 }
 
 .mapset-header-status-plays {
