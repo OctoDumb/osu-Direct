@@ -6,12 +6,15 @@ require('bootstrap');
 
 var shownMapsets = {};
 
+var windowMapset = {};
+
 var items = {
     difficulty: fs.readFileSync("./assets/items/diff.html").toString(),
     mapset: fs.readFileSync("./assets/items/mapset.html").toString(),
     video: fs.readFileSync("./assets/items/video.html").toString(),
     toast: fs.readFileSync("./assets/items/toast.html").toString(),
-    queue: fs.readFileSync("./assets/items/queue.html").toString()
+    queue: fs.readFileSync("./assets/items/queue.html").toString(),
+    windowDiff: fs.readFileSync("./assets/items/windowDiff.html").toString()
 };
 
 String.prototype.rpl = function(obj) {
@@ -120,6 +123,11 @@ $(document).ready(function() {
         $('.mapset-window').css('transition', '1s ease-in-out').css('top', '100vh');
         setTimeout(() => {$('.mapset-window').css('display', 'none');}, 1000);
     });
+
+    $('#preview-audio').get(0).onended = function() {
+        this.pause();
+        $('.playing').toggleClass('playing').toggleClass('fa-stop').toggleClass('fa-play');
+    };
 });
 
 const toasts = {
@@ -138,6 +146,16 @@ function toast(type, message, title) {
     $(toast).appendTo("#toast-div").toast('show').on('hidden.bs.toast', function() {
         this.parentNode.removeChild(this);
     });
+}
+
+function updateWindow(id) {
+    $(`#wdiff-${id}`).toggleClass('active-diff');
+    console.log(windowMapset.maps[id]);
+    let d = windowMapset.maps[id];
+    $('#window-ar-p').width(`${d.ar*10}%`);
+    $('#window-cs-p').width(`${d.cs*10}%`);
+    $('#window-od-p').width(`${d.accuracy*10}%`);
+    $('#window-hp-p').width(`${d.drain*10}%`);
 }
 
 /* Requesting */
@@ -211,11 +229,51 @@ ipc.on('search-result', (event, args) => {
     $('.mapset-header-preview-dim').click(function() {
         let id = $(this).attr('data-id');
         let set = shownMapsets[id];
+        windowMapset = Object.assign(set, {maps: {}, beatmaps: set.beatmaps.sort(sortDiffs)});
+        set.beatmaps.forEach((map) => {
+            windowMapset.maps[map.id] = map;
+        });
+        /* Main Info */
         $('.window-title').text(set.title);
         $('.window-artist').text(set.artist);
         $('.window-creator-avatar').attr('src', `https://a.ppy.sh/${set.user_id}?1.jpeg`);
-        $('.window-creator-name').text(set.creator);
+        $('.window-creator-name').text(`mapped by ${set.creator}`);
         $('.mapset-window').css('display', 'block');
+
+        /* Diffs */
+
+        $('.window-diffs').html('');
+
+        set.beatmaps.sort(sortDiffs).forEach(diff => {
+            let d = items.windowDiff
+                .rpl({
+                    diff: diffName(diff.difficulty_rating),
+                    id: diff.id,
+                    icon: modeIcon(diff.mode_int),
+                    tooltipInfo: `${diff.version.split('"').join("&quot;")}<br>${diff.difficulty_rating.roundTo(2)}`
+                });
+            $(d).appendTo('.window-diffs');
+        });
+
+        $('.window-diff').click(function() {
+            if($(this).hasClass('active-diff')) return;
+            $('.active-diff').toggleClass('active-diff');
+            updateWindow($(this).attr('data-id'));
+        });
+
+        updateWindow(windowMapset.beatmaps[0].id);
+
+        // $(`#wdiff-${d.id}`).toggleClass('active-diff');
+
+        // $('#window-ar-p').width(`${d.ar*10}%`);
+        // $('#window-cs-p').width(`${d.cs*10}%`);
+        // $('#window-od-p').width(`${d.accuracy*10}%`);
+        // $('#window-hp-p').width(`${d.drain*10}%`);
+
+        $('[data-toggle="tooltip"]').tooltip({html: true});
+
+        /* Animation */
+
         setTimeout(()=>{$('.mapset-window').css('top', '0');}, 50);
         setTimeout(()=>{$('.mapset-window').css('transition', 'none');}, 1050);
         $('.window-header').css('background-image', `linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)),url("assets/default-bg.png")`);
@@ -242,7 +300,19 @@ ipc.on('search-result', (event, args) => {
         ipc.send('fav', {id: id, s: s, artist: shownMapsets[id].artist, title: shownMapsets[id].title});
     });
     $('.play-prev').click(function() {
-        toast('e', "Previews are not implemented");
+        if($(this).hasClass('playing')) {
+            $('#preview-audio').get(0).pause();
+            $(this).toggleClass('playing').toggleClass('fa-stop').toggleClass('fa-play');
+            return;
+        }
+        if(!$('#preview-audio').get(0).paused) {
+            $('.playing').toggleClass('playing').toggleClass('fa-stop').toggleClass('fa-play');
+        }
+        $('#preview-audio').trigger('pause');
+        $('#preview-audio').attr('src', `https://b.ppy.sh/preview/${$(this).attr('mapset')}.mp3`);
+        $('#preview-audio').trigger('play');
+        $(this).toggleClass('fa-play').toggleClass('fa-stop').toggleClass('playing');
+        // toast('e', "Previews are not implemented");
     });
     $('.dl').click(function() {
         let id = $(this).attr("mapset");

@@ -48,3 +48,82 @@
     font-style: oblique;
     text-shadow: -3px 3px 12px black;
 }
+
+.window-creator {
+    position: absolute;
+    bottom: 110px;
+    left: 25px;
+}
+
+.window-creator-avatar {
+    width: 100px;
+    border-radius: 10px;
+}
+
+.window-creator-name {
+    position: absolute;
+    top: 0;
+    left: 110px;
+    width: 300px;
+}
+
+.window-diffs {
+    position: absolute;
+    width: 90%;
+    left: 20px;
+    top: 40px;
+}
+
+.window-diff {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    margin: 5px 7px;
+    border-radius: 50%;
+    font-family: FontAwesomeExtra;
+    color: white;
+    font-size: 50px;
+    text-align: justify;
+    padding: 0;
+    user-select: none;
+    cursor: pointer;
+    box-shadow: -4px 4px 8px black;
+    transition: opacity .5s ease-in-out;
+    opacity: 0.55;
+}
+
+.window-diff.active-diff {
+    opacity: 1;
+}
+
+.window-difficulty {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: #0005;
+}
+
+.list-unstyled>li>* {
+    display: inline-block;
+    margin: 0 5px;
+}
+
+.d-progress {
+    position: relative;
+    width: 80px;
+    height: 10px;
+    background: #fff8;
+}
+
+.d-progress-in {
+    position: absolute;
+    height: 100%;
+    left: 0;
+    background: #fd0;
+    transition: width .8s ease-in-out;
+}

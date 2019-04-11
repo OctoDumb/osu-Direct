@@ -134,16 +134,18 @@ body {
 }
 
 input[type=text],
-input[type=password] {
-    background: #222;
-    color: white;
+input[type=password],
+select {
+    background: #222 !important;
+    color: white !important;
 }
 
 input[type=text]:focus,
-input[type=password]:focus {
+input[type=password]:focus,
+select:focus {
     background: #222;
-    border: 1px white solid;
-    box-shadow: 0 0 5px white;
+    border: 1px white solid !important;
+    box-shadow: 0 0 5px white !important;
     color: white;
 }
 
@@ -178,5 +180,5 @@ input[type=password]:focus {
 
 ::-webkit-scrollbar-thumb {
     border-radius: 5px;
-    background-color: #ffffff60;
+    background-color: #fff6;
 }

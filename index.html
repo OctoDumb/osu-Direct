@@ -1,14 +1,15 @@
 <html>
     <head>
         <title>osu!Direct</title>
+        <script src="assets/js/index.js"></script>
         <link rel="stylesheet" href="assets/FontAwesome/css/all.min.css">
         <link rel="stylesheet" href="assets/css/bootstrap.css">
         <link rel="stylesheet" href="assets/css/index.css">
         <link rel="stylesheet" href="assets/css/mapset.css">
         <link rel="stylesheet" href="assets/css/mapsetWindow.css">
-        <script src="assets/js/index.js"></script>
     </head>
     <body>
+        <audio id="preview-audio" volume="0.5"></audio>
         <div class="bg"></div>
         <div class="header">
             <div class="header-drag">
@@ -24,6 +25,9 @@
             </div>
         </div>
         <div class="queue">
+            <center>
+                <h1>Queue</h1>
+            </center>
         </div>
         <div class="container">
             <div class="toast-container" aria-live="polite" aria-atomic="true" style="position: fixed; top: 40px; right: 15px; min-width: 300px; min-height: 200px; pointer-events: none;">
@@ -54,6 +58,39 @@
                 </div>
                 <div class="window-title"></div>
                 <div class="window-artist"></div>
+                <div class="window-diffs"></div>
+                <div class="window-difficulty">
+                    <ul class="list-unstyled">
+                        <li>
+                            AR: <div class="d-progress">
+                                <div id="window-ar-p" class="d-progress-in" style="width: 0%">
+
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            CS: <div class="d-progress">
+                                <div id="window-cs-p" class="d-progress-in" style="width: 0%">
+
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            OD: <div class="d-progress">
+                                <div id="window-od-p" class="d-progress-in" style="width: 0%">
+
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            HP: <div class="d-progress">
+                                <div id="window-hp-p" class="d-progress-in" style="width: 0%">
+
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </body>
