@@ -9,13 +9,16 @@
         <link rel="stylesheet" href="assets/css/mapsetWindow.css">
     </head>
     <body>
-        <audio id="preview-audio" volume="0.5"></audio>
+        <audio id="preview-audio" volume="0.1"></audio>
         <div class="bg"></div>
         <div class="header">
             <div class="header-drag">
                 <span class="header-name">osu!Direct v2.0.0</span>
             </div>
             <div class="header-buttons">
+                <div class="header-button gear">
+                    
+                </div>
                 <div class="header-button minimize">
                     <i class="fas fa-window-minimize"></i>
                 </div>
@@ -28,6 +31,18 @@
             <center>
                 <h1>Queue</h1>
             </center>
+        </div>
+        <div class="settings" style="display: none;">
+            <div class="bg"></div>
+            <div class="content">
+                <div class="menu">
+                    <div class="btn-group-vertical" role="group">
+                        <button class="btn btn-outline-success" data-id="general">General</button>
+                        <button class="btn btn-outline-success" data-id="changes">Changelog</button>
+                    </div>
+                </div>
+                <div class="panel"></div>
+            </div>
         </div>
         <div class="container">
             <div class="toast-container" aria-live="polite" aria-atomic="true" style="position: fixed; top: 40px; right: 15px; min-width: 300px; min-height: 200px; pointer-events: none;">
@@ -90,6 +105,14 @@
                             </div>
                         </li>
                     </ul>
+                </div>
+            </div>
+            <div class="window-body">
+                <div class="window-menu">
+                    <!-- Menu -->
+                </div>
+                <div class="window-top">
+                    
                 </div>
             </div>
         </div>

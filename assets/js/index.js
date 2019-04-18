@@ -14,7 +14,11 @@ var items = {
     video: fs.readFileSync("./assets/items/video.html").toString(),
     toast: fs.readFileSync("./assets/items/toast.html").toString(),
     queue: fs.readFileSync("./assets/items/queue.html").toString(),
-    windowDiff: fs.readFileSync("./assets/items/windowDiff.html").toString()
+    windowDiff: fs.readFileSync("./assets/items/windowDiff.html").toString(),
+    ranking: {
+        first: fs.readFileSync("./assets/items/ranking/first.html").toString(),
+        top: fs.readFileSync("./assets/items/ranking/top.html").toString()
+    }
 };
 
 String.prototype.rpl = function(obj) {
@@ -149,8 +153,9 @@ function toast(type, message, title) {
 }
 
 function updateWindow(id) {
+    ipc.send('getTop', id);
     $(`#wdiff-${id}`).toggleClass('active-diff');
-    console.log(windowMapset.maps[id]);
+    // console.log(windowMapset.maps[id]);
     let d = windowMapset.maps[id];
     $('#window-ar-p').width(`${d.ar*10}%`);
     $('#window-cs-p').width(`${d.cs*10}%`);
@@ -352,4 +357,67 @@ ipc.on('setFav', (event, args) => {
         h.removeClass('heart-favourite');
     if(args.f)
         h.addClass('heart-favourite');
+});
+
+ipc.on('top', (event, args) => {
+    console.log(args);
+    let id = $('.active-diff').attr('data-id');
+    if(args.id != id) return;
+    let first = items.ranking.first
+        .rpl({
+            place: 1,
+            user_avatar: args.top.scores[0].user.avatar_url,
+            user_nickname: args.top.scores[0].user.username,
+            country: args.top.scores[0].user.country.code,
+            score: args.top.scores[0].score,
+            acc: (args.top.scores[0].accuracy * 100).toFixed(2),
+            combo: args.top.scores[0].max_combo,
+            n300: args.top.scores[0].statistics.count_300,
+            n100: args.top.scores[0].statistics.count_100,
+            n50: args.top.scores[0].statistics.count_50,
+            nmiss: args.top.scores[0].statistics.count_miss,
+            pp: Math.round(args.top.scores[0].pp),
+            mods: args.top.scores[0].mods.join("")
+        });
+    let own = args.top.userScore ?
+        args.top.userScore.position == 1 ? ""
+        : items.ranking.first
+            .rpl({
+                place: args.top.userScore.position,
+                user_avatar: args.top.userScore.score.user.avatar_url,
+                user_nickname: args.top.userScore.score.user.username,
+                country: args.top.userScore.score.user.country.code,
+                score: args.top.userScore.score.score,
+                acc: (args.top.userScore.score.accuracy * 100).toFixed(2),
+                combo: args.top.userScore.score.max_combo,
+                n300: args.top.userScore.score.statistics.count_300,
+                n100: args.top.userScore.score.statistics.count_100,
+                n50: args.top.userScore.score.statistics.count_50,
+                nmiss: args.top.userScore.score.statistics.count_miss,
+                pp: Math.round(args.top.userScore.score.pp),
+                mods: args.top.userScore.score.mods.join("")
+            })
+        : "";
+    let table = "";
+    args.top.scores.forEach((score, ind) => {
+        table += `<tr>
+            <td>#${ind+1}</td>
+            <td>${score.score}</td>
+            <td>${(score.accuracy * 100).toFixed(2)}</td>
+            <td>${score.user.username}</td>
+            <td>${score.max_combo}</td>
+            <td>${score.statistics.count_300}</td>
+            <td>${score.statistics.count_100}</td>
+            <td>${score.statistics.count_50}</td>
+            <td>${score.statistics.count_miss}</td>
+            <td>${Math.round(score.pp)}</td>
+            <td>${score.mods.join("")}</td>
+        </tr>`;
+    });
+    let top = items.ranking.top
+        .rpl({
+            first: first+own,
+            scores: table
+        });
+    $('.window-top').html(top);
 });

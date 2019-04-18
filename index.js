@@ -265,10 +265,21 @@ ipc.on('search', async (event, args) => {
 
 ipc.on('fav', (event, args) => {
     favourite(args, event.sender);
-    // event.sender.send('toast', {type: 'e', message: 'Favouriting is not implemented yet'});
 });
 
 ipc.on('dl', (event, args) => {
     download(args, event.sender);
-    // event.sender.send('toast', {type: 'e', message: 'Downloading is not implemented yet'});
+});
+
+ipc.on('getTop', (event, id) => {
+    request(`https://osu.ppy.sh/beatmaps/${id}/scores`, (err, res, body) => {
+        if(err) 
+            return event.sender.send('toast', {type: 'e', message: "Failed to load top"});
+        event.sender.send('top', {id: id, top: JSON.parse(body)});
+    });
+});
+
+ipc.on('getFriendsTop', (event, id) => {
+    event.sender.send('toast', {type: 'i', message: 'Friends Ranking is not implemented yet'});
+    event.sender.send('f-top', {id: id, top: ""});
 });
