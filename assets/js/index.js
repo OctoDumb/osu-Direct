@@ -111,7 +111,7 @@ $(document).ready(function() {
         ipc.send('tray');
     });
 
-    $('[data-toggle="tooltip"]').tooltip({html: true});
+    $('[data-toggle="tooltip"]').tooltip({boundary: "window", html: true});
 
     $('.search-send').click(() => {
         let query = {
@@ -124,6 +124,7 @@ $(document).ready(function() {
     /* Mapset window */
 
     $('.window-close').click(() => {
+        $('body').css("overflow", "auto");
         $('.mapset-window').css('transition', '1s ease-in-out').css('top', '100vh');
         setTimeout(() => {$('.mapset-window').css('display', 'none');}, 1000);
     });
@@ -132,6 +133,8 @@ $(document).ready(function() {
         this.pause();
         $('.playing').toggleClass('playing').toggleClass('fa-stop').toggleClass('fa-play');
     };
+
+    $("#preview-audio").get(0).volume = 0.15;
 });
 
 const toasts = {
@@ -279,6 +282,7 @@ ipc.on('search-result', (event, args) => {
 
         /* Animation */
 
+        $('body').css("overflow", "hidden");
         setTimeout(()=>{$('.mapset-window').css('top', '0');}, 50);
         setTimeout(()=>{$('.mapset-window').css('transition', 'none');}, 1050);
         $('.window-header').css('background-image', `linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)),url("assets/default-bg.png")`);
@@ -377,7 +381,8 @@ ipc.on('top', (event, args) => {
             n50: args.top.scores[0].statistics.count_50,
             nmiss: args.top.scores[0].statistics.count_miss,
             pp: Math.round(args.top.scores[0].pp),
-            mods: args.top.scores[0].mods.join("")
+            mods: args.top.scores[0].mods.join(""),
+            rank: args.top.scores[0].rank
         });
     let own = args.top.userScore ?
         args.top.userScore.position == 1 ? ""
@@ -395,7 +400,8 @@ ipc.on('top', (event, args) => {
                 n50: args.top.userScore.score.statistics.count_50,
                 nmiss: args.top.userScore.score.statistics.count_miss,
                 pp: Math.round(args.top.userScore.score.pp),
-                mods: args.top.userScore.score.mods.join("")
+                mods: args.top.userScore.score.mods.join(""),
+                rank: args.top.userScore.score.rank
             })
         : "";
     let table = "";

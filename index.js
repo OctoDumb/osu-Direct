@@ -11,6 +11,8 @@ const request = require('request').defaults({
 });
 const progress = require('request-progress');
 
+var phantom = require('phantom');
+
 var user = fs.existsSync(`${userData}/login.data`) ? 
     JSON.parse(fs.readFileSync(`${userData}/login.data`).toString()) : {};
 
@@ -89,14 +91,18 @@ async function login() {
                 username: user.u,
                 password: user.p
             }
-        }, function(err, res, body) {
+        }, async function(err, res, body) {
             if(err)
                 return r(false);
             var incorrect = /You have specified an incorrect/i;
-            r(!incorrect.test(body));
-            if(!incorrect.test(body)) {
-                user.check = body.split("localUserCheck = \"")[1].split("\";")[0];
-                user.id = body.split("localUserId = ")[1].split(";")[0];
+            if(body.indexOf("DDoS protection by Cloudflare") != -1) {
+                app.exit();
+            } else {
+                if(!incorrect.test(body)) {
+                    user.check = body.split("localUserCheck = \"")[1].split("\";")[0];
+                    user.id = body.split("localUserId = ")[1].split(";")[0];
+                }
+                r(!incorrect.test(body));
             }
         });
     });

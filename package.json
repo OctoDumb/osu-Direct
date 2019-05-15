@@ -33,6 +33,7 @@
     "electron-drag": "^1.2.2",
     "jquery": "^3.3.1",
     "ojsama": "^1.0.19",
+    "phantom": "^6.2.0",
     "popper.js": "^1.14.7",
     "querystring": "^0.2.0",
     "request": "^2.88.0",

@@ -14,7 +14,7 @@ body>.bg {
     opacity: 0.03;
 }
 
-.header {
+body>.header {
     position: fixed;
     background: #111;
     height: 25px;
